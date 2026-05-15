@@ -10,9 +10,9 @@
     "build": "bunx vite build",
     "preview": "bunx vite preview",
     "test": "bunx vitest run",
-    "format": "bunx biome format",
-    "lint": "bunx biome lint",
-    "check": "bunx biome check"
+    "format": "bunx biome format --write",
+    "lint": "bunx biome lint --fix",
+    "check": "bunx biome check --write"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
