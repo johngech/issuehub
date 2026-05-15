@@ -1,88 +1,85 @@
-<!-- Context: project-intelligence/business | Priority: high | Version: 1.0 | Updated: 2025-01-12 -->
+<!-- Context: project-intelligence/business | Priority: high | Version: 1.0 | Updated: 2026-05-15 -->
 
 # Business Domain
 
-> Document the business context, problems solved, and value created.
+> A learning/experimentation project to build a full-stack issue tracking web application.
 
 ## Quick Reference
 
 - **Purpose**: Understand why this project exists
-- **Update When**: Business direction changes, new features shipped, pivot
-- **Audience**: Developers needing context, stakeholders, product team
+- **Update When**: Project scope changes, new learning goals identified
+- **Audience**: Developers needing context, anyone onboarding
 
 ## Project Identity
 
 ```
-Project Name: [Name]
-Tagline: [One-line description]
-Problem Statement: [What problem are we solving?]
-Solution: [How we're solving it]
+Project Name: issue-tracker
+Tagline: Full-stack issue tracking — a learning project
+Problem Statement: Learn modern full-stack development by building a real application
+Solution: Express 5 backend + React 19 frontend in a Bun monorepo
 ```
 
 ## Target Users
 
 | User Segment | Who They Are | What They Need | Pain Points |
 |--------------|--------------|----------------|-------------|
-| [Primary] | [Description] | [Their needs] | [Their frustrations] |
-| [Secondary] | [Description] | [Their needs] | [Their frustrations] |
+| Developers (primary) | Developers learning full-stack | Hands-on project to apply modern tools | Tutorials are too abstract, need a real app |
+| Self (secondary) | Project owner | Explore new tech (Bun, Express 5, React 19, TanStack Router) | Need motivation to learn by building |
 
 ## Value Proposition
 
-**For Users**:
-- [Key benefit 1]
-- [Key benefit 2]
-- [Key benefit 3]
+**For Learners**:
+- Hands-on experience with modern full-stack stack (Bun, Express 5, React 19)
+- Real architecture decisions with documented rationale
+- Incremental complexity — start simple, add features over time
 
-**For Business**:
-- [Key value 1]
-- [Key value 2]
+**For Project Health**:
+- Clean, documented codebase as a reference
+- All decisions captured in decision log for later review
+- Educational value > production readiness
 
 ## Success Metrics
 
 | Metric | Definition | Target | Current |
 |--------|------------|--------|---------|
-| [Metric 1] | [What it measures] | [Goal] | [Actual] |
-| [Metric 2] | [What it measures] | [Goal] | [Actual] |
+| Scaffold complete | Project structure, tooling, dev commands working | Done | ✅ Done |
+| Core CRUD working | Create/read/update/delete issues via API + UI | Future | ❌ Not started |
+| Tests passing | Vitest test suite green | 100% | ✅ Scaffold only |
 
-## Business Model (if applicable)
-
-```
-Revenue Model: [How the business makes money]
-Pricing Strategy: [If applicable]
-Unit Economics: [CAC, LTV, etc.]
-Market Position: [Where we fit in the market]
-```
+No business model, revenue targets, or market metrics — this is a learning project.
 
 ## Key Stakeholders
 
-| Role | Name | Responsibility | Contact |
-|------|------|----------------|---------|
-| [Product Owner] | [Name] | [What they own] | [Contact] |
-| [Tech Lead] | [Name] | [What they own] | [Contact] |
-| [Business Lead] | [Name] | [What they own] | [Contact] |
+| Role | Name | Responsibility |
+|------|------|----------------|
+| Developer | Project owner | All decisions, implementation, learning |
+
+Single-person project — no external stakeholders.
 
 ## Roadmap Context
 
-**Current Focus**: [What we're working on now]
-**Next Milestone**: [Upcoming goal]
-**Long-term Vision**: [Where this is heading]
+**Current Focus**: Project scaffolding and infrastructure setup complete. Preparing for core CRUD functionality.
+
+**Next Milestone**: Define data model (issue schema) and implement basic CRUD API.
+
+**Long-term Vision**: Fully functional issue tracker with user authentication, filtering, and search — built with full understanding of each component.
 
 ## Business Constraints
 
-- [Constraint 1] - [Why it exists]
-- [Constraint 2] - [Why it exists]
+- **Learning-first**: Technology choices prioritize learning value over production readiness
+- **Single developer**: Scope must be realistic for one person
+- **No timeline**: Project progresses at learner's pace
 
 ## Onboarding Checklist
 
-- [ ] Understand the problem statement
-- [ ] Identify target users and their needs
-- [ ] Know the key value proposition
-- [ ] Understand success metrics
-- [ ] Know who the stakeholders are
-- [ ] Understand current business constraints
+- [ ] Understand the problem statement (learning project)
+- [ ] Know the target user (developers learning full-stack)
+- [ ] Understand current project focus (scaffold complete, CRUD next)
+- [ ] Know this is a single-person learning project with no business model
 
 ## Related Files
 
-- `technical-domain.md` - How this business need is solved technically
-- `business-tech-bridge.md` - Mapping between business and technical
-- `decisions-log.md` - Business decisions with context
+- `technical-domain.md` — How this learning goal is solved technically
+- `business-tech-bridge.md` — Mapping between learning goals and tech choices
+- `decisions-log.md` — Technical decisions with educational context
+- `living-notes.md` — Current open questions and next steps

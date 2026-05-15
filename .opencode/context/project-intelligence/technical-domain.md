@@ -1,59 +1,86 @@
-<!-- Context: project-intelligence/technical | Priority: high | Version: 1.0 | Updated: 2025-01-12 -->
+<!-- Context: project-intelligence/technical | Priority: high | Version: 1.0 | Updated: 2026-05-15 -->
 
 # Technical Domain
 
-> Document the technical foundation, architecture, and key decisions.
+> Express 5 backend + React 19 SPA, served in a Bun monorepo with no database yet.
 
 ## Quick Reference
 
 - **Purpose**: Understand how the project works technically
 - **Update When**: New features, refactoring, tech stack changes
-- **Audience**: Developers, DevOps, technical stakeholders
+- **Audience**: Developers, technical stakeholders
 
 ## Primary Stack
 
 | Layer | Technology | Version | Rationale |
 |-------|-----------|---------|-----------|
-| Language | [e.g., TypeScript] | [Version] | [Why this language] |
-| Framework | [e.g., Node.js] | [Version] | [Why this framework] |
-| Database | [e.g., PostgreSQL] | [Version] | [Why this database] |
-| Infrastructure | [e.g., AWS, Vercel] | [N/A] | [Why this infra] |
-| Key Libraries | [List important ones] | [Versions] | [Why each matters] |
+| Language | TypeScript | 6.0 | Static typing, modern JS features |
+| Runtime/PM | Bun | latest | Single runtime for dev/scripts, faster than Node, built-in TS support |
+| Backend | Express 5 | ^5.2.1 | Lightweight HTTP framework, familiar API |
+| Frontend | React 19 | ^19.2.0 | Modern component model, concurrent features |
+| Routing | TanStack Router | latest | File-based routing, auto code-splitting, type-safe |
+| Styling | Tailwind CSS v4 | ^4.1.18 | Utility-first, CSS-first config via Vite plugin |
+| Icons | Lucide React | ^0.545.0 | Lightweight, tree-shakeable icon library |
+| Bundler | Vite 8 | ^8.0.0 | Fast HMR, native ESM, plugin ecosystem |
+| Testing | Vitest 4 + Testing Library | ^4.1.5 / ^16.3.0 | Native Vite integration, modern API, jsdom |
+| Lint/Format | Biome 2 | 2.4.x | All-in-one linter + formatter, fast |
 
 ## Architecture Pattern
 
 ```
-Type: [Monolith | Microservices | Serverless | Agent-based | Hybrid]
-Pattern: [Brief description]
-Diagram: [Link to architecture diagram if exists]
+Type: Monorepo — REST API backend + SPA frontend
+Pattern: Single-page application consumes REST API over HTTP
+Backend: Express 5 server (port 4000) serving JSON endpoints
+Frontend: React 19 SPA (port 3000 dev) via Vite, TanStack Router for client-side routing
 ```
 
 ### Why This Architecture?
 
-[Explain the business and technical reasons for this architecture choice. What problem does this architecture solve? What were alternatives considered?]
+This is an **early-stage learning project**. Monorepo simplifies local development — one repo to clone, one lock file, shared config. Bun auto-discovers the `server/` and `client/` packages via `bun.lock` without workspace config. Separate frontend/backend decouples concerns and mimics real-world full-stack architecture.
 
 ## Project Structure
 
 ```
-[Project Root]
-├── src/                    # Source code
-├── tests/                  # Test files
-├── docs/                   # Documentation
-├── scripts/                # Build/deploy scripts
-└── [Other key directories]
+issue-tracker/
+├── server/                  # Express 5 backend
+│   ├── index.ts             # Entrypoint — GET /api/health
+│   ├── src/                 # EMPTY — no routes/models/controllers yet
+│   ├── biome.json           # Biome config (tab indent, double quotes)
+│   └── package.json
+├── client/                  # React 19 frontend
+│   ├── src/
+│   │   ├── main.tsx         # App bootstrap, creates router
+│   │   ├── router.tsx       # TanStack Router factory
+│   │   ├── routes/
+│   │   │   ├── __root.tsx   # Root layout with devtools
+│   │   │   └── index.tsx    # Home page — "Welcome to TanStack Start"
+│   │   ├── routeTree.gen.ts # AUTO-GENERATED — DO NOT EDIT
+│   │   └── styles.css       # Tailwind entry — excluded from Biome
+│   ├── index.html           # HTML entrypoint
+│   ├── vite.config.ts       # Vite + Tailwind + TanStack Router plugin
+│   ├── biome.json           # Biome config (tab indent, double quotes)
+│   └── package.json
+├── .opencode/               # OpenAgentsControl AI agent framework
+├── AGENTS.md                # AI agent instructions
+├── bun.lock                 # Lock file (Bun auto-discovers packages)
+├── package.json             # Root (Vite/TypeScript dev deps only)
+└── tsconfig.json            # Shared root TS config
 ```
 
 **Key Directories**:
-- `src/` - Contains all application logic organized by [module/feature/domain]
-- `tests/` - [How tests are organized]
-- `docs/` - [What documentation lives here]
+- `server/` — Express 5 backend, single entrypoint `index.ts`
+- `client/` — React 19 SPA with file-based routing
+- `.opencode/` — AI agent framework config, agents, context, skills
 
 ## Key Technical Decisions
 
 | Decision | Rationale | Impact |
 |----------|-----------|--------|
-| [Decision 1] | [Why this choice] | [What it enables] |
-| [Decision 2] | [Why this choice] | [What it enables] |
+| Bun runtime | Single runtime for server + client, fast, no workspace config needed | Simplified toolchain, faster installs |
+| TanStack Router | File-based routing, auto code-splitting, type-safe routes | Convention over configuration |
+| Tailwind v4 + Vite plugin | Zero-config CSS, CSS-first configuration, utility classes | Rapid UI development |
+| Biome (no ESLint/Prettier) | All-in-one tool, faster, built-in import organization | Less config overhead |
+| Vitest + Testing Library | Native Vite integration, modern, fast | Fast feedback on tests |
 
 See `decisions-log.md` for full decision history with alternatives.
 
@@ -61,48 +88,54 @@ See `decisions-log.md` for full decision history with alternatives.
 
 | System | Purpose | Protocol | Direction |
 |--------|---------|----------|-----------|
-| [API 1] | [What it does] | [REST/GraphQL/gRPC] | [Inbound/Outbound] |
-| [Database] | [What it stores] | [PostgreSQL/Mongo/etc] | [Internal] |
-| [Service] | [What it provides] | [HTTP/gRPC] | [Outbound] |
+| `/api/health` | Health check endpoint | REST/JSON | Inbound (server) → Client |
+| Future REST API | Issue CRUD operations | REST/JSON | Inbound (server) → Client |
+
+No database, external services, or authentication configured yet.
 
 ## Technical Constraints
 
 | Constraint | Origin | Impact |
 |------------|--------|--------|
-| [Legacy systems] | [Business/Tech] | [What limitation it creates] |
-| [Compliance] | [Regulation] | [What must be followed] |
-| [Performance] | [SLAs] | [What must be met] |
+| No database yet | Learning stage | All data is mock/future |
+| No CI/CD | Learning stage | Manual dev/build only |
+| No deployment | Learning stage | Local development only |
 
 ## Development Environment
 
 ```
-Setup: [Quick setup command or link]
-Requirements: [What developers need installed]
-Local Dev: [How to run locally]
-Testing: [How to run tests]
+Setup:  git clone && cd issue-tracker && bun install
+Server: cd server && bun run --watch index.ts  (port 4000)
+Client: cd client && bunx vite dev --port 3000
+Test:   cd client && bunx vitest run
+Lint:   bunx biome check --write (from package dir)
 ```
+
+**Requirements**: Bun installed, Node.js optional (Bun handles everything).
 
 ## Deployment
 
 ```
-Environment: [Production/Staging/Development]
-Platform: [Where it deploys]
-CI/CD: [Pipeline used]
-Monitoring: [Tools for observability]
+Environment:  Not configured (local dev only)
+Platform:     TBD
+CI/CD:        None yet
+Monitoring:   None yet
 ```
 
 ## Onboarding Checklist
 
-- [ ] Know the primary tech stack
-- [ ] Understand the architecture pattern and why it was chosen
+- [ ] Know the primary tech stack (TypeScript, Express 5, React 19, Bun)
+- [ ] Understand the monorepo structure and why it was chosen
 - [ ] Know the key project directories and their purpose
 - [ ] Understand major technical decisions and rationale
-- [ ] Know integration points and dependencies
-- [ ] Be able to set up local development environment
-- [ ] Know how to run tests and deploy
+- [ ] Know that `routeTree.gen.ts` is auto-generated — never edit manually
+- [ ] Know that `server/src/` is empty — entrypoint is `server/index.ts`
+- [ ] Be able to set up local development environment (bun install + dev commands)
+- [ ] Know how to run tests (client only) and lint
 
 ## Related Files
 
-- `business-domain.md` - Why this technical foundation exists
-- `business-tech-bridge.md` - How business needs map to technical solutions
-- `decisions-log.md` - Full decision history with context
+- `business-domain.md` — Why this technical foundation exists
+- `business-tech-bridge.md` — How business needs map to technical solutions
+- `decisions-log.md` — Full decision history with context
+- `living-notes.md` — Current open questions and known issues

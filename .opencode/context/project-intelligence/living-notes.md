@@ -1,8 +1,8 @@
-<!-- Context: project-intelligence/notes | Priority: high | Version: 1.0 | Updated: 2025-01-12 -->
+<!-- Context: project-intelligence/notes | Priority: high | Version: 1.0 | Updated: 2026-05-15 -->
 
 # Living Notes
 
-> Active issues, technical debt, open questions, and insights that don't fit elsewhere. Keep this alive.
+> Active items, open questions, conventions, and gotchas for the issue-tracker project.
 
 ## Quick Reference
 
@@ -14,101 +14,98 @@
 
 | Item | Impact | Priority | Mitigation |
 |------|--------|----------|------------|
-| [Debt item] | [What risk it creates] | [High/Med/Low] | [How to manage] |
+| None yet | — | — | Project is scaffold only |
 
-### Technical Debt Details
-
-**[Debt Item]**  
-*Priority*: [High/Med/Low]  
-*Impact*: [What happens if not addressed]  
-*Root Cause*: [Why this debt exists]  
-*Proposed Solution*: [How to fix it]  
-*Effort*: [Small/Medium/Large]  
-*Status*: [Acknowledged | Scheduled | In Progress | Deferred]
+No technical debt identified yet — the project is at the scaffolding stage with minimal code.
 
 ## Open Questions
 
 | Question | Stakeholders | Status | Next Action |
 |----------|--------------|--------|-------------|
-| [Question] | [Who needs to decide] | [Open/In Progress] | [What needs to happen] |
+| Database choice: SQLite vs PostgreSQL? | Project owner | Open | Evaluate once CRUD is planned |
+| Deployment target? | Project owner | Open | Not needed until MVP is ready |
+| Authentication strategy? | Project owner | Open | Can add later, not blocking |
+| Server testing framework? | Project owner | Open | Vitest could extend to server, or use Bun test |
 
 ### Open Question Details
 
-**[Question]**  
-*Context*: [Why this question matters]  
-*Stakeholders*: [Who needs to be involved]  
-*Options*: [What are the possibilities]  
-*Timeline*: [When does this need resolution]  
-*Status*: [Open/In Progress/Blocked]
+**Database choice**
+*Context*: Need to store issues. SQLite is simpler (no server), PostgreSQL is more production-realistic.
+*Options*: SQLite (via Bun's built-in `bun:sqlite` or better-sqlite3), PostgreSQL (via drizzle or Prisma)
+*Timeline*: Before starting CRUD implementation
+*Status*: Open
+
+**Deployment target**
+*Context*: Once the app is functional, where to deploy?
+*Options*: Vercel, Railway, Fly.io, self-hosted
+*Timeline*: Future
+*Status*: Open
+
+**Authentication strategy**
+*Context*: Issue tracking needs user accounts for multi-user scenarios.
+*Options*: JWT, session-based, OAuth (GitHub)
+*Timeline*: Future
+*Status*: Open
 
 ## Known Issues
 
 | Issue | Severity | Workaround | Status |
 |-------|----------|------------|--------|
-| [Issue] | [Critical/High/Med/Low] | [Temporary fix] | [Known/In Progress/Fixed] |
-
-### Issue Details
-
-**[Issue Title]**  
-*Severity*: [Critical/High/Med/Low]  
-*Impact*: [Who/what is affected]  
-*Reproduction*: [Steps to reproduce if applicable]  
-*Workaround*: [Temporary solution if exists]  
-*Root Cause*: [If known]  
-*Fix Plan*: [How to properly fix]  
-*Status*: [Known/In Progress/Fixed in vX.X]
+| None | — | — | Project is scaffold only |
 
 ## Insights & Lessons Learned
 
 ### What Works Well
-- [Positive pattern 1] - [Why it works]
-- [Positive pattern 2] - [Why it works]
+- **Bun monorepo**: Auto-detects packages via `bun.lock` without workspace config — smooth DX
+- **Vite 8 + React 19**: HMR is instant, no compatibility issues so far
+- **TanStack Router plugin**: File-based routing works out of the box with Vite
 
 ### What Could Be Better
-- [Area for improvement 1] - [Why it's a problem]
-- [Area for improvement 2] - [Why it's a problem]
+- **No server tests yet**: Server has no test setup — need to add before implementing API logic
 
 ### Lessons Learned
-- [Lesson 1] - [Context and implication]
-- [Lesson 2] - [Context and implication]
+- **AGENTS.md is essential**: Documenting project structure and gotchas upfront helps AI agents serve better context
+- **Biome exclusion patterns**: `styles.css` and `routeTree.gen.ts` must be explicitly excluded from Biome checks — easy to forget
 
 ## Patterns & Conventions
 
 ### Code Patterns Worth Preserving
-- [Pattern 1] - [Where it lives, why it's good]
-- [Pattern 2] - [Where it lives, why it's good]
+- **File-based routing**: Route files in `client/src/routes/` auto-map to URLs
+- **Tab indentation, double quotes**: Enforced by Biome across both packages
+- **Independent Biome configs**: Each package has its own `biome.json` — keeps concerns separate
 
 ### Gotchas for Maintainers
-- [Gotcha 1] - [What to watch out for]
-- [Gotcha 2] - [What to watch out for]
+- **`routeTree.gen.ts` is auto-generated** — never edit manually. Regenerated on dev/build by `@tanstack/router-plugin/vite`
+- **`server/src/` is empty** — the server entrypoint is `server/index.ts`, not `src/`
+- **Path aliases `#/` and `@/` both resolve to `client/src/`** — defined in `client/tsconfig.json` paths and `client/package.json` imports
+- **Root `package.json` scripts (`dev`, `build`, `preview`) are for Vite** — they won't work for the server
+- **Server runs on port 4000** by default, client dev server on port 3000
+- **`styles.css` excluded from Biome** — contains Tailwind directives, not standard CSS
 
 ## Active Projects
 
 | Project | Goal | Owner | Timeline |
 |---------|------|-------|----------|
-| [Project] | [What we're doing] | [Who owns it] | [When it matters] |
+| Scaffolding (current) | Project setup, tooling, dev commands working | Project owner | ✅ Complete |
+| Core CRUD (next) | Issue data model + REST API + UI | Project owner | Next sprint |
 
 ## Archive (Resolved Items)
 
-Moved here for historical reference. Current team should refer to current notes above.
-
-### Resolved: [Item]
-- **Resolved**: [Date]
-- **Resolution**: [What was decided/done]
-- **Learnings**: [What we learned from this]
+No resolved items yet.
 
 ## Onboarding Checklist
 
-- [ ] Review known technical debt and understand impact
-- [ ] Know what open questions exist and who's involved
-- [ ] Understand current issues and workarounds
-- [ ] Be aware of patterns and gotchas
-- [ ] Know active projects and timelines
-- [ ] Understand the team's priorities
+- [ ] Know that `routeTree.gen.ts` is auto-generated — never edit
+- [ ] Know that `server/index.ts` is the server entrypoint, not `src/`
+- [ ] Know about the `#/` and `@/` path aliases for client imports
+- [ ] Understand tab indentation and double quotes conventions
+- [ ] Know which files are excluded from Biome checking
+- [ ] Be aware of open questions (database, deployment, auth)
+- [ ] Understand current project phase (scaffold complete, CRUD next)
 
 ## Related Files
 
-- `decisions-log.md` - Past decisions that inform current state
-- `business-domain.md` - Business context for current priorities
-- `technical-domain.md` - Technical context for current state
-- `business-tech-bridge.md` - Context for current trade-offs
+- `decisions-log.md` — Past decisions that inform current state
+- `business-domain.md` — Learning goals and project identity
+- `technical-domain.md` — Technical details and architecture
+- `business-tech-bridge.md` — Learning goal ↔ tech mapping

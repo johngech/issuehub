@@ -1,94 +1,88 @@
-<!-- Context: project-intelligence/bridge | Priority: high | Version: 1.0 | Updated: 2025-01-12 -->
+<!-- Context: project-intelligence/bridge | Priority: high | Version: 1.0 | Updated: 2026-05-15 -->
 
 # Business ↔ Tech Bridge
 
-> Document how business needs translate to technical solutions. This is the critical connection point.
+> How learning goals drive technical choices in the issue-tracker project.
 
 ## Quick Reference
 
-- **Purpose**: Show stakeholders technical choices serve business goals
-- **Purpose**: Show developers business constraints drive architecture
-- **Update When**: New features, refactoring, business pivot
+- **Purpose**: Show how educational objectives map to architectural decisions
+- **Update When**: New features planned, tech stack changes
+- **Related Files**: `business-domain.md`, `technical-domain.md`, `decisions-log.md`
 
 ## Core Mapping
 
-| Business Need | Technical Solution | Why This Mapping | Business Value |
-|---------------|-------------------|------------------|----------------|
-| [Users need X] | [Technical implementation] | [Why this maps] | [Value delivered] |
-| [Business wants Y] | [Technical implementation] | [Why this maps] | [Value delivered] |
-| [Compliance requires Z] | [Technical implementation] | [Why this maps] | [Value delivered] |
+| Learning Goal | Technical Solution | Why This Mapping | Value |
+|---------------|-------------------|------------------|-------|
+| Learn modern runtime | Bun (single runtime, no workspace config) | Eliminates toolchain complexity, focuses on code | Faster setup, less config yak-shaving |
+| Learn file-based routing | TanStack Router with `router-plugin/vite` | Convention over configuration, auto code-splitting | Production pattern without boilerplate |
+| Learn utility-first CSS | Tailwind CSS v4 via `@tailwindcss/vite` plugin | Zero-config setup, modern CSS-first approach | Rapid UI iteration, no CSS file management |
+| Learn unified lint/format | Biome (replaces ESLint + Prettier) | All-in-one, fewer dependencies to manage | Understand modern linting patterns |
+| Learn modern testing | Vitest + Testing Library + jsdom | Native Vite integration, fast, industry-standard | Test patterns that transfer to real projects |
+| Learn AI-assisted dev | OpenAgentsControl (OAC) framework | Project-specific context, custom agents | Understand AI coding workflows |
 
 ## Feature Mapping Examples
 
-### Feature: [Feature Name]
+### Feature: Health Check Endpoint
 
-**Business Context**:
-- User need: [What users need]
-- Business goal: [Why this matters to business]
-- Priority: [Why this was prioritized]
-
-**Technical Implementation**:
-- Solution: [What was built]
-- Architecture: [How it fits the system]
-- Trade-offs: [What was considered and why it won]
-
-**Connection**:
-[Explain clearly how the technical solution serves the business need. What would happen without this feature? What does this feature enable for the business?]
-
-### Feature: [Feature Name]
-
-**Business Context**:
-- User need: [What users need]
-- Business goal: [Why this matters to business]
-- Priority: [Why this was prioritized]
+**Learning Context**:
+- Goal: Understand Express 5 setup and basic routing
+- Tech: Express 5 with TypeScript + Bun
+- Priority: First backend feature
 
 **Technical Implementation**:
-- Solution: [What was built]
-- Architecture: [How it fits the system]
-- Trade-offs: [What was considered and why it won]
+- Solution: `server/index.ts` — single `GET /api/health` returning `{ status: "OK!" }`
+- Architecture: Standard Express app, port from `PORT` env (default 4000)
+- Trade-offs: Minimal — enough to verify server works, no database or middleware yet
 
-**Connection**:
-[Explain clearly how the technical solution serves the business need.]
+**Connection**: Establishes the backend foundation. Everything else builds on this pattern.
+
+### Feature: Welcome Page
+
+**Learning Context**:
+- Goal: Verify React 19 + TanStack Router + Tailwind v4 integration
+- Tech: React 19, TanStack Router, Tailwind v4
+- Priority: First frontend feature
+
+**Technical Implementation**:
+- Solution: `client/src/routes/index.tsx` — home page with "Welcome to TanStack Start" heading
+- Architecture: File-based routing via TanStack Router Plugin, auto-generated `routeTree.gen.ts`
+- Tooling: Tailwind via `@tailwindcss/vite` plugin, React devtools, TanStack Router devtools
+
+**Connection**: Verifies the full frontend toolchain works end-to-end (Vite → Tailwind → Router → React).
 
 ## Trade-off Decisions
 
-When business and technical needs conflict, document the trade-off:
+When learning goals and production-readiness conflict:
 
-| Situation | Business Priority | Technical Priority | Decision Made | Rationale |
-|-----------|-------------------|-------------------|---------------|-----------|
-| [Conflict] | [What business wants] | [What tech wants] | [What was chosen] | [Why this was right] |
-
-## Common Misalignments
-
-| Misalignment | Warning Signs | Resolution Approach |
-|--------------|---------------|---------------------|
-| [Type of mismatch] | [Symptoms to watch for] | [How to address] |
+| Situation | Learning Priority | Production Priority | Decision Made | Rationale |
+|-----------|-------------------|---------------------|---------------|-----------|
+| Bun vs Node.js | Bun — new, learn modern runtime | Node.js — mature ecosystem | Bun | Learning value outweighs ecosystem risk |
+| Monorepo vs separate repos | Monorepo — simpler setup | Separate — independent deploy | Monorepo | Single project, no deployment pressure |
+| No database yet | Start without, learn later | Choose DB early | No database | Focus on scaffolding first |
 
 ## Stakeholder Communication
 
-This file helps translate between worlds:
+**For Learners** (primary audience):
+- Every tech choice intentionally exposes a modern pattern
+- Documentation captures "why" so you learn the rationale
+- Project starts simple and grows — you build understanding incrementally
 
-**For Business Stakeholders**:
-- Shows that technical investments serve business goals
-- Provides context for why certain choices were made
-- Demonstrates ROI of technical decisions
-
-**For Technical Stakeholders**:
-- Provides business context for architectural decisions
-- Shows the "why" behind constraints and requirements
-- Helps prioritize technical debt with business impact
+**For External Viewers**:
+- This is a learning project, not a production app
+- Code quality and documentation are the primary output
+- Decisions are documented as educational artifacts
 
 ## Onboarding Checklist
 
-- [ ] Understand the core business needs this project addresses
-- [ ] See how each major feature maps to business value
-- [ ] Know the key trade-offs and why decisions were made
-- [ ] Be able to explain to stakeholders why technical choices matter
-- [ ] Be able to explain to developers why business constraints exist
+- [ ] Understand the core learning goal for this project
+- [ ] See how each tech choice serves a learning objective
+- [ ] Know the key trade-offs (Bun vs Node.js, etc.)
+- [ ] Understand current project scope (scaffold + health endpoint)
 
 ## Related Files
 
-- `business-domain.md` - Business needs in detail
-- `technical-domain.md` - Technical implementation in detail
-- `decisions-log.md` - Decisions made with full context
-- `living-notes.md` - Current open questions and issues
+- `business-domain.md` — Learning goals and project identity
+- `technical-domain.md` — Technical implementation details
+- `decisions-log.md` — Full decision history with rationale
+- `living-notes.md` — Current open questions
