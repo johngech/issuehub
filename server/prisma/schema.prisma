@@ -1,5 +1,6 @@
 generator client {
-    provider = "prisma-client-js"
+    provider = "prisma-client"
+    output   = "./client"
 }
 
 datasource db {
@@ -57,7 +58,7 @@ model Verification {
     value      String
     expiresAt  DateTime
     createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+    updatedAt  DateTime  @updatedAt
 
     @@index([identifier])
 }

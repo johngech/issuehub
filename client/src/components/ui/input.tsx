@@ -1,22 +1,91 @@
-import { forwardRef, type InputHTMLAttributes } from "react";
+import {
+	forwardRef,
+	type InputHTMLAttributes,
+	type ReactNode,
+	useId,
+} from "react";
+import { mergeClassName } from "#/lib/merge-class-name";
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {}
+export interface InputProps
+	extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
+	variant?:
+		| "primary"
+		| "secondary"
+		| "accent"
+		| "info"
+		| "success"
+		| "warning"
+		| "error";
+	size?: "lg" | "md" | "sm" | "xs";
+	bordered?: boolean;
+	leftIcon?: ReactNode;
+	rightIcon?: ReactNode;
+	label?: string;
+	errorText?: string;
+}
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-	({ className, type, ...props }, ref) => {
+	(
+		{
+			variant,
+			size = "md",
+			bordered = true,
+			leftIcon,
+			rightIcon,
+			label,
+			id,
+			errorText,
+			className,
+			type,
+			...props
+		},
+		ref,
+	) => {
+		const generatedId = useId();
+		const inputId = id || generatedId;
+
+		const wrapperClasses = mergeClassName(
+			"flex items-center gap-2 rounded-md border bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+			!bordered && "border-transparent",
+			errorText ? "border-destructive" : "border-input",
+			className,
+		);
+
 		return (
-			<input
-				type={type}
-				className={
-					"flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" +
-					(className ? ` ${className}` : "")
-				}
-				ref={ref}
-				{...props}
-			/>
+			<div className="w-full">
+				{label && (
+					<label
+						htmlFor={inputId}
+						className="mb-1.5 block text-sm font-medium leading-none text-foreground"
+					>
+						{label}
+					</label>
+				)}
+
+				<div className={wrapperClasses}>
+					{leftIcon && <span className="shrink-0 opacity-70">{leftIcon}</span>}
+
+					<input
+						id={inputId}
+						ref={ref}
+						type={type}
+						className="w-full bg-transparent file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+						{...props}
+					/>
+
+					{rightIcon && (
+						<span className="shrink-0 opacity-70">{rightIcon}</span>
+					)}
+				</div>
+
+				{errorText && (
+					<p className="mt-1.5 text-sm text-destructive">{errorText}</p>
+				)}
+			</div>
 		);
 	},
 );
+
 Input.displayName = "Input";
 
 export { Input };
