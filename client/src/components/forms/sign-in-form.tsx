@@ -46,7 +46,7 @@ const SignInForm = ({ onSuccess }: SignInFormProps) => {
       }}
       onSubmit={handleSubmit}
     >
-      <fieldset disabled={isLoading} className="space-y-6">
+      <fieldset className="space-y-6">
         <FormError message={serverError} />
 
         <FormField
