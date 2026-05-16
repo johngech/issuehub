@@ -32,7 +32,11 @@ const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
 
   const handleSubmit = useCallback(
     async (data: SignUpInput) => {
-      const { confirmPassword: _omit, ...apiPayload } = data;
+      const apiPayload = signUpSchema
+        .omit({
+          confirmPassword: true,
+        })
+        .parse(data);
       await execute(() => authClient.signUp.email(apiPayload));
     },
     [execute],
@@ -49,7 +53,7 @@ const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
       }}
       onSubmit={handleSubmit}
     >
-      <fieldset className="space-y-6">
+      <fieldset disabled={isLoading} className="space-y-6">
         <FormError message={serverError} />
 
         <FormField

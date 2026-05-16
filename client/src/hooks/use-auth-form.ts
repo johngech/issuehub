@@ -39,6 +39,7 @@ export const useAuthForm = ({
       setIsLoading(true);
       try {
         const { data, error } = await action();
+
         if (error) {
           setServerError(mapAuthError(error));
           return;
