@@ -5,6 +5,8 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
   RATE_LIMITED: "Too many attempts. Please wait.",
   USER_NOT_FOUND: "Invalid email or password",
   USER_ALREADY_EXISTS: "An account with this email already exists.",
+  USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL:
+    "An account with this email already exists.",
 };
 
 export const mapAuthError = (error: {
