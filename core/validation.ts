@@ -15,7 +15,8 @@ export const signUpSchema = z
     email: z.email({ error: "Invalid email address" }),
     password: z
       .string()
-      .min(8, { error: "Password must be at least 8 characters" }),
+      .min(8, { error: "Password must be at least 8 characters" })
+      .max(40, { error: "Password must be a maximum of 40 characters" }),
     confirmPassword: z.string(),
   })
   .superRefine((data, ctx) => {
