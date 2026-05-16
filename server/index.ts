@@ -25,9 +25,15 @@ app.all("/api/auth/*any", toNodeHandler(auth));
 
 app.get("/api/health", async (_req, res) => {
 	try {
-		res.send({ status: "OK!", database: "connected" });
+		res.send({
+			status: "OK!",
+			database: "connected",
+		});
 	} catch {
-		res.status(500).send({ status: "ERROR", database: "disconnected" });
+		res.status(500).send({
+			status: "ERROR",
+			database: "disconnected",
+		});
 	}
 });
 
@@ -36,11 +42,17 @@ app.get("/api/me", async (req, res) => {
 		headers: fromNodeHeaders(req.headers),
 	});
 	if (!session) {
-		return res.status(401).send({ error: "Unauthorized" });
+		return res.status(401).send({
+			error: "Unauthorized",
+		});
 	}
 	return res.json(session);
 });
 
-app.listen(PORT, async () => {
-	console.log(`The app is running @ http://localhost:${PORT}`);
-});
+if (import.meta.main) {
+	app.listen(PORT, async () => {
+		console.log(`The app is running @ http://localhost:${PORT}`);
+	});
+}
+
+export { app };
