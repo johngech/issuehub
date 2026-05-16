@@ -1,51 +1,53 @@
-import { useRouter } from "@tanstack/react-router";
-import { useState } from "react";
 import type { SignInInput } from "@issue-tracker/core/validation";
 import { signInSchema } from "@issue-tracker/core/validation";
-import { Button } from "#/components/ui/button";
+import { useRouter } from "@tanstack/react-router";
+import { useCallback } from "react";
 import { Form, FormField } from "#/components/forms";
+import { FormError } from "#/components/forms/form-error";
+import { Button } from "#/components/ui/button";
+import { useAuthForm } from "#/hooks/use-auth-form";
 import { authClient } from "#/lib/auth-client";
 
-const SignInForm = () => {
+interface SignInFormProps {
+  onSuccess?: () => void;
+}
+
+const SignInForm = ({ onSuccess }: SignInFormProps) => {
   const router = useRouter();
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (data: SignInInput) => {
-    setServerError(null);
-    setIsLoading(true);
-    try {
-      const { data: session, error: signInError } =
-        await authClient.signIn.email(data);
-
-      if (signInError) {
-        setServerError(signInError.message || "Invalid email or password");
-        return;
-      }
-
-      if (session) {
-        router.invalidate();
-        router.navigate({ to: "/" });
-      }
-    } catch {
-      setServerError("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
+  const handleSuccess = useCallback(() => {
+    router.invalidate();
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      router.navigate({
+        to: "/",
+      });
     }
-  };
+  }, [router, onSuccess]);
+
+  const { serverError, isLoading, execute } = useAuthForm({
+    onSuccess: handleSuccess,
+  });
+
+  const handleSubmit = useCallback(
+    async (data: SignInInput) => {
+      await execute(() => authClient.signIn.email(data));
+    },
+    [execute],
+  );
 
   return (
     <Form
       validationSchema={signInSchema}
-      initialValues={{ email: "", password: "" }}
+      initialValues={{
+        email: "",
+        password: "",
+      }}
       onSubmit={handleSubmit}
     >
-      <div className="space-y-6">
-        {serverError && (
-          <div className="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
-            {serverError}
-          </div>
-        )}
+      <fieldset disabled={isLoading} className="space-y-6">
+        <FormError message={serverError} />
 
         <FormField
           name="email"
@@ -66,7 +68,7 @@ const SignInForm = () => {
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Signing in..." : "Sign in"}
         </Button>
-      </div>
+      </fieldset>
     </Form>
   );
 };

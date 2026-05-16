@@ -1,52 +1,60 @@
-import { useRouter } from "@tanstack/react-router";
-import { useState } from "react";
 import type { SignUpInput } from "@issue-tracker/core/validation";
 import { signUpSchema } from "@issue-tracker/core/validation";
-import { Button } from "#/components/ui/button";
+import { useRouter } from "@tanstack/react-router";
+import { useCallback } from "react";
 import { Form, FormField } from "#/components/forms";
+import { FormError } from "#/components/forms/form-error";
+import { Button } from "#/components/ui/button";
+import { useAuthForm } from "#/hooks/use-auth-form";
 import { authClient } from "#/lib/auth-client";
 
-const SignUpForm = () => {
+interface SignUpFormProps {
+  onSuccess?: () => void;
+}
+
+const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
   const router = useRouter();
-  const [serverError, setServerError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (data: SignUpInput) => {
-    setServerError(null);
-    setIsLoading(true);
-    try {
-      const { confirmPassword: _, ...apiPayload } = data;
-      const { data: session, error: signUpError } =
-        await authClient.signUp.email(apiPayload);
-
-      if (signUpError) {
-        setServerError(signUpError.message || "Failed to create account");
-        return;
-      }
-
-      if (session) {
-        router.invalidate();
-        router.navigate({ to: "/" });
-      }
-    } catch {
-      setServerError("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
+  const handleSuccess = useCallback(() => {
+    router.invalidate();
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      router.navigate({
+        to: "/",
+      });
     }
-  };
+  }, [router, onSuccess]);
+
+  const { serverError, isLoading, execute } = useAuthForm({
+    onSuccess: handleSuccess,
+  });
+
+  const handleSubmit = useCallback(
+    async (data: SignUpInput) => {
+      const apiPayload = signUpSchema
+        .omit({
+          confirmPassword: true,
+        })
+        .parse(data);
+      await execute(() => authClient.signUp.email(apiPayload));
+    },
+    [execute],
+  );
 
   return (
     <Form
       validationSchema={signUpSchema}
-      initialValues={{ name: "", email: "", password: "", confirmPassword: "" }}
+      initialValues={{
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      }}
       onSubmit={handleSubmit}
     >
-      <div className="space-y-6">
-        {serverError && (
-          <div className="rounded-md bg-destructive/10 p-4 text-sm text-destructive">
-            {serverError}
-          </div>
-        )}
+      <fieldset disabled={isLoading} className="space-y-6">
+        <FormError message={serverError} />
 
         <FormField
           name="name"
@@ -83,7 +91,7 @@ const SignUpForm = () => {
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Creating account..." : "Sign up"}
         </Button>
-      </div>
+      </fieldset>
     </Form>
   );
 };

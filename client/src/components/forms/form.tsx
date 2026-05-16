@@ -15,6 +15,7 @@ interface FormProps<T extends FieldValues> {
   initialValues: DefaultValues<T>;
   onSubmit: SubmitHandler<T>;
   className?: string;
+  mode?: "onSubmit" | "onBlur" | "onChange" | "onTouched" | "all";
 }
 
 const Form = <T extends FieldValues>({
@@ -23,16 +24,21 @@ const Form = <T extends FieldValues>({
   initialValues,
   onSubmit,
   className,
+  mode = "onTouched",
 }: FormProps<T>) => {
   const methods = useForm<T>({
     defaultValues: initialValues,
     resolver: zodResolver(validationSchema),
-    mode: "onChange",
+    mode,
   });
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className={className}>
+      <form
+        onSubmit={methods.handleSubmit(onSubmit)}
+        className={className}
+        noValidate
+      >
         {children}
       </form>
     </FormProvider>
