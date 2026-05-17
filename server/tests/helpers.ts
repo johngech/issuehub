@@ -1,9 +1,9 @@
 import { prisma } from "../prisma/client";
 
 export interface TestUser {
-	name: string;
-	email: string;
-	password: string;
+  name: string;
+  email: string;
+  password: string;
 }
 
 /** Shared test password used across all auth tests. */
@@ -17,13 +17,13 @@ let counter = 0;
  * Includes `process.pid` to prevent collisions across parallel CI workers.
  */
 export function createTestUser(): TestUser {
-	counter++;
-	const id = `${Date.now()}-${process.pid}-${counter}`;
-	return {
-		name: `Test User ${id}`,
-		email: `test-${id}@test.com`,
-		password: TEST_PASSWORD,
-	};
+  counter++;
+  const id = `${Date.now()}-${process.pid}-${counter}`;
+  return {
+    name: `Test User ${id}`,
+    email: `test-${id}@test.com`,
+    password: TEST_PASSWORD,
+  };
 }
 
 /**
@@ -31,5 +31,5 @@ export function createTestUser(): TestUser {
  * Uses deleteMany so it's a no-op gracefully when no record exists.
  */
 export async function cleanupUser(email: string): Promise<void> {
-	await prisma.user.deleteMany({ where: { email } });
+  await prisma.user.deleteMany({ where: { email } });
 }

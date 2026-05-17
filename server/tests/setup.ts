@@ -7,5 +7,5 @@ import "dotenv/config";
 vi.spyOn(console, "error").mockImplementation(() => {});
 
 afterAll(() => {
-	vi.restoreAllMocks();
+  vi.restoreAllMocks();
 });

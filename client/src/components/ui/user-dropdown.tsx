@@ -1,4 +1,5 @@
-import { LogOut } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { LogOut, Settings } from "lucide-react";
 import { Avatar } from "#/components/ui/avatar";
 import {
   DropdownMenu,
@@ -14,6 +15,7 @@ export interface UserDropdownUser {
   name: string | null;
   email: string;
   image?: string | null;
+  role?: string;
 }
 
 export interface UserDropdownProps {
@@ -47,6 +49,13 @@ export function UserDropdown({ user, onSignOut }: Readonly<UserDropdownProps>) {
             </span>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link to="/profile">
+            <Settings className="mr-2 h-4 w-4" />
+            Profile
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={onSignOut}>
           <LogOut className="mr-2 h-4 w-4" />

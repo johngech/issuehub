@@ -9,6 +9,7 @@
 	"exports": {
 		".": "./index.ts",
 		"./validation": "./validation.ts",
-		"./types": "./types.ts"
+		"./types": "./types.ts",
+		"./constants": "./constants.ts"
 	}
 }

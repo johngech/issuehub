@@ -1,5 +1,6 @@
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { createRoot } from "react-dom/client";
+import { AppProviders } from "./providers/app";
 import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({
@@ -18,4 +19,8 @@ const rootElement = document.getElementById("app");
 
 if (!rootElement) throw new Error("Root element not found");
 
-createRoot(rootElement).render(<RouterProvider router={router} />);
+createRoot(rootElement).render(
+  <AppProviders>
+    <RouterProvider router={router} />
+  </AppProviders>,
+);

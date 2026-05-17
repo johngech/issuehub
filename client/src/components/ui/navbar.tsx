@@ -1,5 +1,5 @@
 import { Menu, X } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { AuthButtons } from "#/components/ui/auth-buttons";
 import { MobileMenu } from "#/components/ui/mobile-menu";
 import { NavBrand } from "#/components/ui/nav-brand";
@@ -7,12 +7,21 @@ import type { NavLink } from "#/components/ui/nav-links";
 import { NavLinks } from "#/components/ui/nav-links";
 import { UserDropdown } from "#/components/ui/user-dropdown";
 import { authClient } from "#/lib/auth-client";
-
-const navLinks: NavLink[] = [{ to: "/", label: "Home" }];
+import { isAdmin } from "#/lib/auth-guard";
 
 export function Navbar() {
   const { data: session, isPending } = authClient.useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLinks: NavLink[] = useMemo(
+    () => [
+      { to: "/", label: "Home" },
+      ...(isAdmin(session?.user)
+        ? [{ to: "/admin/users", label: "Users" }]
+        : []),
+    ],
+    [session?.user],
+  );
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -35,9 +44,10 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-border border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-        <NavBrand />
-
-        <NavLinks links={navLinks} />
+        <div className="flex items-center gap-6">
+          <NavBrand />
+          <NavLinks links={navLinks} />
+        </div>
 
         <div className="flex items-center gap-2">
           <div className="hidden items-center gap-2 md:flex">{desktopAuth}</div>

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Role } from "./constants";
 
 export const signInSchema = z.object({
   email: z.email(),
@@ -30,3 +31,22 @@ export const signUpSchema = z
   });
 
 export type SignUpInput = z.infer<typeof signUpSchema>;
+
+export const updateProfileSchema = z.object({
+  name: z
+    .string()
+    .min(2, { error: "Name must be at least 2 characters" })
+    .max(50, { error: "Name must be at most 50 characters" })
+    .optional(),
+  email: z.email({ error: "Invalid email address" }).optional(),
+});
+
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+export const changeRoleSchema = z.object({
+  role: z.enum(Role, {
+    error: "Role must be ADMIN, AGENT, or USER",
+  }),
+});
+
+export type ChangeRoleInput = z.infer<typeof changeRoleSchema>;

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import type { ReactNode } from "react";
 import { AuthButtons } from "#/components/ui/auth-buttons";
 import { Avatar } from "#/components/ui/avatar";
@@ -18,6 +18,7 @@ export interface MobileMenuProps {
       name: string | null;
       email: string;
       image?: string | null;
+      role?: string;
     };
   };
   onSignOut: () => void;
@@ -59,6 +60,12 @@ export function MobileMenu({
             </p>
           </div>
         </div>
+        <Link to="/profile" onClick={onClose}>
+          <Button variant="ghost" size="sm" className="w-full justify-start">
+            <Settings className="mr-2 h-4 w-4" />
+            Profile
+          </Button>
+        </Link>
         <Button
           variant="ghost"
           size="sm"

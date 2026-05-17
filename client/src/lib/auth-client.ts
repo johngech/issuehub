@@ -5,6 +5,18 @@ export const authClient = createAuthClient({
     process.env.NODE_ENV === "production"
       ? process.env.VITE_API_URL
       : "http://localhost:4000",
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+      },
+      status: {
+        type: "string",
+        required: false,
+      },
+    },
+  },
 });
 
 export type Session = typeof authClient.$Infer.Session;
