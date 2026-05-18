@@ -1,4 +1,5 @@
 import type { Role } from "@issue-tracker/core/constants";
+import { Box, Heading, Text } from "@radix-ui/themes";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "#/components/ui/button";
@@ -31,7 +32,7 @@ export const Route = createFileRoute("/admin/users/$id")({
 function AdminUserDetailPage() {
   const { id } = Route.useParams();
   const router = useRouter();
-  const { data: user, isPending } = useUser(id);
+  const { data: user, isPending, error } = useUser(id);
   const changeRole = useChangeRole();
   const toggleStatus = useToggleUserStatus();
 
@@ -58,27 +59,54 @@ function AdminUserDetailPage() {
 
   if (isPending) {
     return (
-      <div className="mx-auto max-w-lg p-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 w-48 rounded bg-muted" />
-          <div className="h-10 w-full rounded bg-muted" />
-        </div>
-      </div>
+      <Box className="mx-auto max-w-lg p-8">
+        <Box className="animate-pulse space-y-4">
+          <Box className="h-8 w-48 rounded bg-muted" />
+          <Box className="h-10 w-full rounded bg-muted" />
+        </Box>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box className="mx-auto max-w-lg p-8">
+        <Heading className="text-2xl font-bold text-destructive">
+          Error Loading User
+        </Heading>
+        <Text className="mt-2 text-muted-foreground">
+          {error.message || "Unable to load user details. Please try again."}
+        </Text>
+        <button
+          type="button"
+          onClick={() => router.history.back()}
+          className="mt-4 text-sm text-muted-foreground hover:text-foreground"
+        >
+          ← Back to users
+        </button>
+      </Box>
     );
   }
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-lg p-8">
-        <h1 className="text-2xl font-bold">User not found</h1>
-      </div>
+      <Box className="mx-auto max-w-lg p-8">
+        <Heading className="text-2xl font-bold">User not found</Heading>
+        <button
+          type="button"
+          onClick={() => router.history.back()}
+          className="mt-4 text-sm text-muted-foreground hover:text-foreground"
+        >
+          ← Back to users
+        </button>
+      </Box>
     );
   }
 
   const isDisabled = user.status === "DISABLED";
 
   return (
-    <div className="mx-auto max-w-lg p-8">
+    <Box className="mx-auto max-w-lg p-8">
       <button
         type="button"
         onClick={() => router.history.back()}
@@ -88,19 +116,20 @@ function AdminUserDetailPage() {
         ← Back to users
       </button>
 
-      <h1 className="text-2xl font-bold">{user.name}</h1>
-      <p className="mt-1 text-muted-foreground">{user.email}</p>
+      <Heading className="text-2xl font-bold">{user.name}</Heading>
+      <Text className="mt-1 text-muted-foreground">{user.email}</Text>
 
-      <div className="mt-4 flex gap-2">
+      <Box className="mt-4 flex gap-2">
         <RoleBadge role={user.role} />
         <StatusBadge status={user.status} />
-      </div>
+      </Box>
 
-      <div className="mt-8 space-y-6 border-t pt-6">
-        {/* Role change */}
-        <div>
-          <h2 className="text-sm font-medium">Role</h2>
-          <div className="mt-2 flex items-center gap-2">
+      <Box className="mt-8 space-y-6 border-t pt-6">
+        <Box>
+          <Heading as="h2" className="text-sm font-medium">
+            Role
+          </Heading>
+          <Box className="mt-2 flex items-center gap-2">
             <RoleSelect
               value={user.role}
               onChange={(role) => {
@@ -109,13 +138,13 @@ function AdminUserDetailPage() {
                 setConfirmOpen(true);
               }}
             />
-          </div>
-        </div>
-
-        {/* Disable/enable toggle */}
-        <div>
-          <h2 className="text-sm font-medium">Account Status</h2>
-          <div className="mt-2">
+          </Box>
+        </Box>
+        <Box>
+          <Heading as="h2" className="text-sm font-medium">
+            Account Status
+          </Heading>
+          <Box className="mt-2">
             <Button
               variant={isDisabled ? "classic" : "ghost"}
               size="2"
@@ -133,9 +162,9 @@ function AdminUserDetailPage() {
                   ? "Enable Account"
                   : "Disable Account"}
             </Button>
-          </div>
-        </div>
-      </div>
+          </Box>
+        </Box>
+      </Box>
 
       <p className="mt-2 text-xs text-muted-foreground">
         Created: {new Date(user.createdAt).toLocaleDateString()}
@@ -174,6 +203,6 @@ function AdminUserDetailPage() {
           setPendingRole(null);
         }}
       />
-    </div>
+    </Box>
   );
 }

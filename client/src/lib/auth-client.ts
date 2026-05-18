@@ -5,6 +5,9 @@ export const authClient = createAuthClient({
     import.meta.env.MODE === "production"
       ? import.meta.env.VITE_API_URL
       : "http://localhost:4000",
+  fetchOptions: {
+    credentials: "include",
+  },
   user: {
     additionalFields: {
       role: {
