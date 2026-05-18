@@ -105,6 +105,35 @@ function AdminUserDetailPage() {
 
   const isDisabled = user.status === "DISABLED";
 
+  const confirmConfig = {
+    role: {
+      title: "Change User Role",
+      description: `Change ${user.name}'s role to ${pendingRole}?`,
+      confirmLabel: "Change Role",
+    },
+    disable: {
+      title: "Disable User",
+      description: `Disable ${user.name}'s account? They will no longer be able to log in.`,
+      confirmLabel: "Disable",
+    },
+    enable: {
+      title: "Enable User",
+      description: `Enable ${user.name}'s account? They will be able to log in again.`,
+      confirmLabel: "Enable",
+    },
+  } as const;
+
+  const statusAction = isDisabled ? "enable" : "disable";
+  const statusButtonText = toggleStatus.isPending
+    ? `${statusAction === "enable" ? "Enabling" : "Disabling"}...`
+    : `${statusAction === "enable" ? "Enable" : "Disable"} Account`;
+
+  const activeConfirm = confirmAction
+    ? confirmConfig[
+        confirmAction === "disable" && isDisabled ? "enable" : confirmAction
+      ]
+    : confirmConfig.disable;
+
   return (
     <Box className="mx-auto max-w-lg p-8">
       <button
@@ -154,13 +183,7 @@ function AdminUserDetailPage() {
                 setConfirmOpen(true);
               }}
             >
-              {toggleStatus.isPending
-                ? isDisabled
-                  ? "Enabling..."
-                  : "Disabling..."
-                : isDisabled
-                  ? "Enable Account"
-                  : "Disable Account"}
+              {statusButtonText}
             </Button>
           </Box>
         </Box>
@@ -173,27 +196,9 @@ function AdminUserDetailPage() {
       {/* Confirmation dialog */}
       <ConfirmDialog
         open={confirmOpen}
-        title={
-          confirmAction === "role"
-            ? "Change User Role"
-            : isDisabled
-              ? "Enable User"
-              : "Disable User"
-        }
-        description={
-          confirmAction === "role"
-            ? `Change ${user.name}'s role to ${pendingRole}?`
-            : isDisabled
-              ? `Enable ${user.name}'s account? They will be able to log in again.`
-              : `Disable ${user.name}'s account? They will no longer be able to log in.`
-        }
-        confirmLabel={
-          confirmAction === "role"
-            ? "Change Role"
-            : isDisabled
-              ? "Enable"
-              : "Disable"
-        }
+        title={activeConfirm.title}
+        description={activeConfirm.description}
+        confirmLabel={activeConfirm.confirmLabel}
         onConfirm={
           confirmAction === "role" ? handleRoleChange : handleToggleStatus
         }
