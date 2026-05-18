@@ -14,18 +14,21 @@ import { isAdmin } from "#/lib/auth-guard";
 export const Route = createFileRoute("/admin/users/$id")({
   component: AdminUserDetailPage,
   beforeLoad: async () => {
-    const { data: session } = await authClient.getSession();
-    if (!isAdmin(session?.user)) {
+    const session = await authClient.getSession();
+    const user = session.data?.user;
+    if (!user || !isAdmin(user)) {
       throw new Error("Unauthorized");
     }
   },
   errorComponent: () => (
-    <div className="mx-auto max-w-lg p-8">
-      <h1 className="text-2xl font-bold text-destructive">Access Denied</h1>
-      <p className="mt-2 text-muted-foreground">
+    <Box className="mx-auto max-w-lg p-8">
+      <Heading className="text-2xl font-bold text-destructive">
+        Access Denied
+      </Heading>
+      <Text className="mt-2 text-muted-foreground">
         You need admin privileges to view this page.
-      </p>
-    </div>
+      </Text>
+    </Box>
   ),
 });
 
@@ -104,6 +107,33 @@ function AdminUserDetailPage() {
   }
 
   const isDisabled = user.status === "DISABLED";
+  const isRoleAction = confirmAction === "role";
+
+  const confirmTitle = isRoleAction
+    ? "Change User Role"
+    : isDisabled
+      ? "Enable User"
+      : "Disable User";
+
+  const confirmDescription = isRoleAction
+    ? `Change ${user.name}'s role to ${pendingRole}?`
+    : isDisabled
+      ? `Enable ${user.name}'s account? They will be able to log in again.`
+      : `Disable ${user.name}'s account? They will no longer be able to log in.`;
+
+  const confirmLabel = isRoleAction
+    ? "Change Role"
+    : isDisabled
+      ? "Enable"
+      : "Disable";
+
+  const statusButtonText = toggleStatus.isPending
+    ? isDisabled
+      ? "Enabling..."
+      : "Disabling..."
+    : isDisabled
+      ? "Enable Account"
+      : "Disable Account";
 
   return (
     <Box className="mx-auto max-w-lg p-8">
@@ -154,13 +184,7 @@ function AdminUserDetailPage() {
                 setConfirmOpen(true);
               }}
             >
-              {toggleStatus.isPending
-                ? isDisabled
-                  ? "Enabling..."
-                  : "Disabling..."
-                : isDisabled
-                  ? "Enable Account"
-                  : "Disable Account"}
+              {statusButtonText}
             </Button>
           </Box>
         </Box>
@@ -173,27 +197,9 @@ function AdminUserDetailPage() {
       {/* Confirmation dialog */}
       <ConfirmDialog
         open={confirmOpen}
-        title={
-          confirmAction === "role"
-            ? "Change User Role"
-            : isDisabled
-              ? "Enable User"
-              : "Disable User"
-        }
-        description={
-          confirmAction === "role"
-            ? `Change ${user.name}'s role to ${pendingRole}?`
-            : isDisabled
-              ? `Enable ${user.name}'s account? They will be able to log in again.`
-              : `Disable ${user.name}'s account? They will no longer be able to log in.`
-        }
-        confirmLabel={
-          confirmAction === "role"
-            ? "Change Role"
-            : isDisabled
-              ? "Enable"
-              : "Disable"
-        }
+        title={confirmTitle}
+        description={confirmDescription}
+        confirmLabel={confirmLabel}
         onConfirm={
           confirmAction === "role" ? handleRoleChange : handleToggleStatus
         }
