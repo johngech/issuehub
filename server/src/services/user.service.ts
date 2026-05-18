@@ -1,6 +1,10 @@
 import { Role } from "@issue-tracker/core/constants";
+import { z } from "zod";
 import { can } from "../auth/authorization";
 import { userRepository } from "../repositories/user.repository";
+
+// Email validation schema
+const emailSchema = z.email("Invalid email format");
 
 // Custom error class for authorization failures
 export class ForbiddenError extends Error {
@@ -29,6 +33,27 @@ export class ConflictError extends Error {
   }
 }
 
+// Custom error class for validation failures
+export class ValidationError extends Error {
+  code = "VALIDATION_ERROR";
+  constructor(message: string) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
+/**
+ * Validate email format
+ * @param email - Email string to validate
+ * @throws ValidationError if email is invalid
+ */
+export function validateEmail(email: string): void {
+  const result = emailSchema.safeParse(email);
+  if (!result.success) {
+    throw new ValidationError(result.error.errors[0].message);
+  }
+}
+
 /**
  * User service — business logic with authorization checks.
  *
@@ -52,8 +77,11 @@ export const userService = {
    * Only the user themselves can do this.
    */
   async updateProfile(userId: string, data: { name?: string; email?: string }) {
-    // If changing email, ensure it's not already taken
+    // Validate email format if provided
     if (data.email) {
+      validateEmail(data.email);
+
+      // If changing email, ensure it's not already taken
       const existing = await userRepository.findByEmail(data.email);
       if (existing && existing.id !== userId) {
         throw new ConflictError("Email already in use");
@@ -76,7 +104,25 @@ export const userService = {
       throw new ForbiddenError("Not authorized to list users");
     }
 
-    return userRepository.findAll(filters);
+    const result = await userRepository.findAll(filters);
+    const { users, total } = result;
+
+    // Calculate pagination metadata
+    const skip = filters?.skip ?? 0;
+    const take = filters?.take ?? 20;
+    const page = Math.floor(skip / take) + 1;
+    const pageCount = Math.ceil(total / take);
+
+    return {
+      users,
+      pagination: {
+        total,
+        page,
+        pageCount,
+        take,
+        skip,
+      },
+    };
   },
 
   /**

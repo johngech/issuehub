@@ -13,15 +13,14 @@ import { isAdmin } from "#/lib/auth-guard";
 export const Route = createFileRoute("/admin/users/$id")({
   component: AdminUserDetailPage,
   beforeLoad: async () => {
-    const session = await authClient.getSession();
-    console.log(session.data?.user);
-    if (!isAdmin(session.data?.user)) {
+    const { data: session } = await authClient.getSession();
+    if (!isAdmin(session?.user)) {
       throw new Error("Unauthorized");
     }
   },
   errorComponent: () => (
     <div className="mx-auto max-w-lg p-8">
-      <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
+      <h1 className="text-2xl font-bold text-destructive">Access Denied</h1>
       <p className="mt-2 text-muted-foreground">
         You need admin privileges to view this page.
       </p>
@@ -83,7 +82,8 @@ function AdminUserDetailPage() {
       <button
         type="button"
         onClick={() => router.history.back()}
-        className="mb-4 text-sm text-muted-foreground hover:text-foreground"
+        aria-label="Go back to users list"
+        className="mb-4 text-sm text-muted-foreground hover:text-foreground focus:outline-none rounded"
       >
         ← Back to users
       </button>
@@ -117,14 +117,21 @@ function AdminUserDetailPage() {
           <h2 className="text-sm font-medium">Account Status</h2>
           <div className="mt-2">
             <Button
-              variant={isDisabled ? "default" : "destructive"}
-              size="sm"
+              variant={isDisabled ? "classic" : "ghost"}
+              size="2"
+              disabled={toggleStatus.isPending}
               onClick={() => {
                 setConfirmAction("disable");
                 setConfirmOpen(true);
               }}
             >
-              {isDisabled ? "Enable Account" : "Disable Account"}
+              {toggleStatus.isPending
+                ? isDisabled
+                  ? "Enabling..."
+                  : "Disabling..."
+                : isDisabled
+                  ? "Enable Account"
+                  : "Disable Account"}
             </Button>
           </div>
         </div>

@@ -14,6 +14,18 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+  },
+  // Session configuration
+  session: {
+    // Session cookie settings
+    cookieName: "session-token",
+    // Session expires in 7 days
+    expiresIn: 7 * 24 * 60 * 60, // 7 days in seconds
+    // Update activity on each request
+    updateAge: 24 * 60 * 60, // 24 hours
+    // Rotate session token on each request for security
+    rotateToken: true,
   },
   trustedOrigins: trustedOrigins,
   user: {

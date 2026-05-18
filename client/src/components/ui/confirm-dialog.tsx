@@ -1,4 +1,5 @@
-import { Button } from "#/components/ui/button";
+import { Button, Dialog, Flex } from "@radix-ui/themes";
+import { X } from "lucide-react";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -6,7 +7,7 @@ interface ConfirmDialogProps {
   description: string;
   confirmLabel?: string;
   cancelLabel?: string;
-  variant?: "destructive" | "default";
+  variant?: "classic" | "solid" | "soft" | "outline" | "ghost" | "link";
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -17,26 +18,34 @@ export function ConfirmDialog({
   description,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
-  variant = "destructive",
   onConfirm,
   onCancel,
 }: Readonly<ConfirmDialogProps>) {
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg">
-        <h3 className="text-lg font-semibold">{title}</h3>
-        <p className="mt-2 text-sm text-muted-foreground">{description}</p>
-        <div className="mt-4 flex justify-end gap-2">
-          <Button variant="outline" size="sm" onClick={onCancel}>
+    <Dialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
+      <Dialog.Trigger />
+      <Dialog.Content>
+        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Description>{description}</Dialog.Description>
+        <Dialog.Close>
+          <Button
+            variant="ghost"
+            size="1"
+            className="absolute right-4 top-4"
+            onClick={onCancel}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </Dialog.Close>
+        <Flex gapY={"3"} mt={"4"}>
+          <Button onClick={onCancel} variant="outline" style={{ flex: 1 }}>
             {cancelLabel}
           </Button>
-          <Button variant={variant} size="sm" onClick={onConfirm}>
+          <Button onClick={onConfirm} style={{ flex: 1 }}>
             {confirmLabel}
           </Button>
-        </div>
-      </div>
-    </div>
+        </Flex>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 }

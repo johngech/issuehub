@@ -19,6 +19,10 @@ model User {
     status        String    @default("ACTIVE")
     sessions      Session[]
     accounts      Account[]
+    
+    @@index([role])
+    @@index([status])
+    @@index([createdAt])
 }
 
 model Session {

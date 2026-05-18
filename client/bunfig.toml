@@ -1,0 +1,13 @@
+[install]
+# Skip optional deps — reduces attack surface and install time
+optional = false
+# Install devDependencies (needed for testing)
+dev = true
+# Install peerDependencies
+peer = true
+# Don't run in production mode (we need devDeps)
+production = false
+# Prevent unexpected lockfile changes (CI safety)
+frozenLockfile = false
+# Block packages published less than 7 days ago — supply chain protection
+minimumReleaseAge = 0

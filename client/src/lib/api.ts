@@ -1,6 +1,8 @@
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
-interface ApiOptions extends RequestInit {
+interface ApiOptions {
+  method?: string;
+  headers?: Record<string, string>;
   body?: unknown;
 }
 

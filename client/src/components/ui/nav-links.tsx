@@ -1,9 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { mergeClassName } from "#/lib/merge-class-name";
+import type { ComponentType } from "react";
+import { Flex, Text } from "@radix-ui/themes";
 
 export interface NavLink {
+  icon?: ComponentType<{ className: string }>;
   to: string;
   label: string;
+  isPublic?: boolean;
 }
 
 export interface NavLinksProps {
@@ -19,29 +22,24 @@ export function NavLinks({
 }: Readonly<NavLinksProps>) {
   const location = useLocation();
 
-  if (links.length === 0) return null;
+  const visibleLinks = links.filter(
+    (link) => link.isPublic === undefined || link.isPublic === true,
+  );
+
+  if (visibleLinks.length === 0) return null;
 
   return (
-    <nav
-      className={mergeClassName(
-        "hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex",
-        className,
-      )}
-    >
-      {links.map((link) => (
-        <Link
-          key={link.to}
-          to={link.to}
-          onClick={onNavClick}
-          className={mergeClassName(
-            "transition-colors hover:text-foreground",
-            location.pathname === link.to &&
-              "text-foreground underline underline-offset-4",
-          )}
-        >
-          {link.label}
+    <Flex className={className} gapX={"3"}>
+      {visibleLinks.map((link) => (
+        <Link key={link.to} to={link.to} onClick={onNavClick}>
+          <Text
+            as="span"
+            className={location.pathname === link.to ? "text-blue-500" : ""}
+          >
+            {link.label}
+          </Text>
         </Link>
       ))}
-    </nav>
+    </Flex>
   );
 }

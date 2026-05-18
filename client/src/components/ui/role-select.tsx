@@ -1,4 +1,5 @@
 import { Role } from "@issue-tracker/core/constants";
+import { Flex, Select } from "@radix-ui/themes";
 
 const ROLES = [
   { value: Role.ADMIN, label: "Admin" },
@@ -6,24 +7,30 @@ const ROLES = [
   { value: Role.USER, label: "User" },
 ];
 
+interface RoleSelectProps {
+  value: Role;
+  onChange: (role: Role) => void;
+  disabled?: boolean;
+}
+
 export function RoleSelect({
   value,
   onChange,
-}: {
-  value: Role;
-  onChange: (role: Role) => void;
-}) {
+  disabled,
+}: Readonly<RoleSelectProps>) {
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value as Role)}
-      className="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
-    >
-      {ROLES.map((role) => (
-        <option key={role.value} value={role.value}>
-          {role.label}
-        </option>
-      ))}
-    </select>
+    <Flex gap={"2"}>
+      <Select.Root value={value} onValueChange={onChange} disabled={disabled}>
+        <Select.Trigger />
+        <Select.Content>
+          <Select.Label>Select Role</Select.Label>
+          {ROLES.map((role) => (
+            <Select.Item key={role.value} value={role.value}>
+              {role.label}
+            </Select.Item>
+          ))}
+        </Select.Content>
+      </Select.Root>
+    </Flex>
   );
 }

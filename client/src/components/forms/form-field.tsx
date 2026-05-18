@@ -14,7 +14,7 @@ const FormField = ({ name, ...props }: FormFieldProps) => {
 
   const error = errors[name]?.message as string | undefined;
 
-  return <Input errorText={error} {...props} {...register(name)} />;
+  return <Input error={error} {...props} {...register(name)} />;
 };
 
 export { FormField };

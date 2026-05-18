@@ -1,28 +1,25 @@
-import { Link } from "@tanstack/react-router";
 import { Button } from "#/components/ui/button";
-import { mergeClassName } from "#/lib/merge-class-name";
+import { Flex } from "@radix-ui/themes";
+import { Link } from "@tanstack/react-router";
 
-export interface AuthButtonsProps {
+interface AuthButtonsProps {
   onNavClick?: () => void;
   className?: string;
 }
 
 export function AuthButtons({
   onNavClick,
-  className,
+  ...props
 }: Readonly<AuthButtonsProps>) {
   return (
-    <div className={mergeClassName("flex items-center gap-2", className)}>
-      <Button variant="ghost" size="sm" asChild>
-        <Link to="/signin" onClick={onNavClick}>
-          Sign In
-        </Link>
-      </Button>
-      <Button variant="default" size="sm" asChild>
-        <Link to="/signup" onClick={onNavClick}>
-          Sign Up
-        </Link>
-      </Button>
-    </div>
+    <Flex gapX={"2"} {...props}>
+      <Link to="/signin" onClick={onNavClick}>
+        <Button variant="soft">Sign In</Button>
+      </Link>
+
+      <Link to="/signup" onClick={onNavClick}>
+        <Button variant="solid">Sign Up</Button>
+      </Link>
+    </Flex>
   );
 }

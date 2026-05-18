@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Users } from "lucide-react";
 import { useState } from "react";
-import { Button } from "#/components/ui/button";
 import { RoleBadge } from "#/components/ui/role-badge";
 import { StatusBadge } from "#/components/ui/status-badge";
 import { useUsers } from "#/hooks/use-users";
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/admin/users/")({
   },
   errorComponent: () => (
     <div className="mx-auto max-w-lg p-8">
-      <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
+      <h1 className="text-2xl font-bold text-destructive">Access Denied</h1>
       <p className="mt-2 text-muted-foreground">
         You need admin privileges to view this page.
       </p>
@@ -34,16 +34,21 @@ function AdminUsersPage() {
       <h1 className="text-2xl font-bold">User Management</h1>
 
       <div className="mt-4">
+        <label htmlFor="user-search" className="text-sm font-medium">
+          Search
+        </label>
         <input
+          id="user-search"
           type="text"
           placeholder="Search by name or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          aria-label="Search users"
+          className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
         />
       </div>
 
-      <div className="mt-6 overflow-hidden rounded-lg border">
+      <div className="mt-6 overflow-x-auto rounded-lg border">
         <table className="w-full text-sm">
           <thead className="bg-muted">
             <tr>
@@ -57,11 +62,15 @@ function AdminUsersPage() {
           <tbody>
             {isPending && (
               <tr>
-                <td
-                  colSpan={5}
-                  className="px-4 py-8 text-center text-muted-foreground"
-                >
-                  Loading...
+                <td colSpan={5} className="p-4">
+                  <div className="space-y-3">
+                    {[1, 2, 3, 4, 5].map((id) => (
+                      <div
+                        key={`skeleton-row-${id}`}
+                        className="h-8 animate-pulse rounded bg-muted"
+                      />
+                    ))}
+                  </div>
                 </td>
               </tr>
             )}
@@ -71,7 +80,10 @@ function AdminUsersPage() {
                   colSpan={5}
                   className="px-4 py-8 text-center text-muted-foreground"
                 >
-                  No users found.
+                  <div className="flex flex-col items-center gap-2">
+                    <Users className="h-8 w-8 opacity-50" />
+                    <span>No users found.</span>
+                  </div>
                 </td>
               </tr>
             )}
@@ -88,11 +100,13 @@ function AdminUsersPage() {
                   <StatusBadge status={user.status} />
                 </td>
                 <td className="px-4 py-3">
-                  <Button asChild variant="outline" size="sm">
-                    <Link to="/admin/users/$id" params={{ id: user.id }}>
-                      View
-                    </Link>
-                  </Button>
+                  <Link
+                    to="/admin/users/$id"
+                    className="btn"
+                    params={{ id: user.id }}
+                  >
+                    View
+                  </Link>
                 </td>
               </tr>
             ))}

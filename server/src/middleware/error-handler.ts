@@ -35,7 +35,11 @@ export function errorHandler(
     return res.status(409).json({ error: err.message });
   }
 
+  // Custom validation errors → 400
+  if ((err as { code?: string }).code === "VALIDATION_ERROR") {
+    return res.status(400).json({ error: err.message });
+  }
+
   // Everything else → 500
-  console.error("Unhandled error:", err);
   return res.status(500).json({ error: "Internal server error" });
 }

@@ -1,10 +1,25 @@
 import { prisma } from "./client";
 
-const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL || "admin@example.com";
+// Require explicit environment variables for production
+const isProduction = process.env.NODE_ENV === "production";
+
+if (isProduction) {
+  if (!process.env.SEED_ADMIN_EMAIL || !process.env.SEED_ADMIN_PASSWORD) {
+    console.error("ERROR: SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD must be set in production");
+    process.exit(1);
+  }
+}
+
+const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL;
 const ADMIN_NAME = process.env.SEED_ADMIN_NAME || "Admin";
-const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || "Admin123!";
+const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD;
 
 async function seed() {
+  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+    console.log("Skipping seed: SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD are required");
+    return;
+  }
+
 	const existing = await prisma.user.findUnique({
 		where: { email: ADMIN_EMAIL },
 	});
@@ -46,7 +61,6 @@ async function seed() {
 	});
 
 	console.log(`Created admin user: ${ADMIN_NAME} <${ADMIN_EMAIL}>`);
-	console.log(`Password: ${ADMIN_PASSWORD}`);
 	console.log("Seed complete.");
 }
 

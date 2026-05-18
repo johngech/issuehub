@@ -16,10 +16,6 @@ export interface UserRecord {
   createdAt: Date;
 }
 
-/**
- * Thin Prisma wrapper for user data access.
- * Keeps database queries isolated and testable.
- */
 export const userRepository = {
   async findById(id: string): Promise<UserRecord | null> {
     const user = await prisma.user.findUnique({
@@ -87,7 +83,7 @@ export const userRepository = {
 
   async update(
     id: string,
-    data: { name?: string; email?: string },
+    data: { name?: string; email?: string; status?: UserStatus },
   ): Promise<UserRecord> {
     const user = await prisma.user.update({
       where: { id },
