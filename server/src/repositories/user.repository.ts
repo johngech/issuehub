@@ -47,7 +47,7 @@ export const userRepository = {
     return user as UserRecord | null;
   },
 
-  async findAll({ search, skip = 0, take = 20 }: UserFilters = {}): Promise<{
+  async findAll({ search, skip = 0, take }: UserFilters = {}): Promise<{
     users: UserRecord[];
     total: number;
   }> {

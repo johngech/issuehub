@@ -2,7 +2,7 @@ import type { Role, UserStatus } from "@issue-tracker/core/constants";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "#/lib/api";
 
-export interface PublicUser {
+export interface User {
   id: string;
   name: string;
   email: string;
@@ -12,13 +12,19 @@ export interface PublicUser {
 }
 
 interface MeResponse {
-  user: PublicUser;
+  user: User;
   session: unknown;
 }
 
-interface UserListResponse {
-  users: PublicUser[];
-  total: number;
+export interface UserListResponse {
+  users: User[];
+  pagination: {
+    total: number;
+    page: number;
+    pageCount: number;
+    take: number;
+    skip: number;
+  };
 }
 
 // ─── Current user ───
@@ -35,7 +41,7 @@ export function useUpdateProfile() {
 
   return useMutation({
     mutationFn: (data: { name?: string; email?: string }) =>
-      api<PublicUser>("/api/me", { method: "PUT", body: data }),
+      api<User>("/api/me", { method: "PUT", body: data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
     },
@@ -65,7 +71,7 @@ export function useUsers(params?: {
 export function useUser(id: string) {
   return useQuery({
     queryKey: ["users", id],
-    queryFn: () => api<PublicUser>(`/api/users/${id}`),
+    queryFn: () => api<User>(`/api/users/${id}`),
     enabled: !!id,
   });
 }
@@ -77,7 +83,7 @@ export function useChangeRole() {
 
   return useMutation({
     mutationFn: ({ userId, role }: { userId: string; role: Role }) =>
-      api<PublicUser>(`/api/users/${userId}/role`, {
+      api<User>(`/api/users/${userId}/role`, {
         method: "PATCH",
         body: { role },
       }),
@@ -95,7 +101,7 @@ export function useToggleUserStatus() {
 
   return useMutation({
     mutationFn: (userId: string) =>
-      api<PublicUser>(`/api/users/${userId}/disable`, {
+      api<User>(`/api/users/${userId}/disable`, {
         method: "PATCH",
       }),
     onSuccess: (_data, userId) => {

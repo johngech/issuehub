@@ -109,7 +109,7 @@ export const userService = {
 
     // Calculate pagination metadata
     const skip = filters?.skip ?? 0;
-    const take = filters?.take ?? 20;
+    const take = filters?.take ?? total;
     const page = Math.floor(skip / take) + 1;
     const pageCount = Math.ceil(total / take);
 

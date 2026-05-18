@@ -1,6 +1,6 @@
+import { Flex, Text } from "@radix-ui/themes";
 import { Link, useLocation } from "@tanstack/react-router";
 import type { ComponentType } from "react";
-import { Flex, Text } from "@radix-ui/themes";
 
 export interface NavLink {
   icon?: ComponentType<{ className: string }>;

@@ -1,9 +1,3 @@
-import { Form, FormField } from "#/components/forms";
-import { Button } from "#/components/ui/button";
-import { RoleBadge } from "#/components/ui/role-badge";
-import { StatusBadge } from "#/components/ui/status-badge";
-import { useCurrentUser, useUpdateProfile } from "#/hooks/use-users";
-import { authClient } from "#/lib/auth-client";
 import {
   type UpdateProfileInput,
   updateProfileSchema,
@@ -11,6 +5,12 @@ import {
 import { Box, Flex, Heading, Text } from "@radix-ui/themes";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { Form, FormField } from "#/components/forms";
+import { Button } from "#/components/ui/button";
+import { RoleBadge } from "#/components/ui/role-badge";
+import { StatusBadge } from "#/components/ui/status-badge";
+import { useCurrentUser, useUpdateProfile } from "#/hooks/use-users";
+import { authClient } from "#/lib/auth-client";
 
 export const Route = createFileRoute("/profile/")({
   component: ProfilePage,

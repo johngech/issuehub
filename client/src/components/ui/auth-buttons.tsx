@@ -1,6 +1,6 @@
-import { Button } from "#/components/ui/button";
 import { Flex } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
+import { Button } from "#/components/ui/button";
 
 interface AuthButtonsProps {
   onNavClick?: () => void;

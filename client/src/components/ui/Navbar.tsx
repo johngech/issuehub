@@ -1,7 +1,7 @@
-import { Box, DropdownMenu, Flex, Text, Separator } from "@radix-ui/themes";
+import { Box, DropdownMenu, Flex, Separator, Text } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
 import { Home, Menu, Users } from "lucide-react";
-import { useMemo, useState, type ReactNode } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { AuthButtons } from "#/components/ui/auth-buttons";
 import { NavBrand } from "#/components/ui/NavBrand";
 import { type NavLink, NavLinks } from "#/components/ui/nav-links";

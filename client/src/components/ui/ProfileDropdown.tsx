@@ -1,7 +1,7 @@
-import { getInitials } from "#/lib/get-initials";
 import { Avatar, Box, DropdownMenu, Flex, Text } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
 import { LogOut, Settings, User } from "lucide-react";
+import { getInitials } from "#/lib/get-initials";
 
 export interface ProfileDropdownProps {
   name: string | null;

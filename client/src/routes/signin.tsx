@@ -1,6 +1,6 @@
+import { Box, Heading, Text } from "@radix-ui/themes";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SignInForm } from "#/components/forms";
-import { Box, Heading, Text } from "@radix-ui/themes";
 
 export const Route = createFileRoute("/signin")({
   component: SignIn,
