@@ -47,6 +47,10 @@ jobs:
         working-directory: client
         run: bunx tsc --noEmit
 
+      - name: Generate Prisma client
+        working-directory: server
+        run: bunx prisma generate
+
       - name: Type check (server)
         working-directory: server
         run: bunx tsc --noEmit
