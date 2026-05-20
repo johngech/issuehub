@@ -1,15 +1,20 @@
 {
-	"name": "@issue-tracker/core",
-	"version": "0.0.0",
-	"private": true,
-	"type": "module",
-	"dependencies": {
-		"zod": "^4.4.3"
-	},
-	"exports": {
-		".": "./index.ts",
-		"./validation": "./validation.ts",
-		"./types": "./types.ts",
-		"./constants": "./constants.ts"
-	}
+  "name": "@issue-tracker/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./validation": "./validation.ts",
+    "./types": "./types.ts",
+    "./constants": "./constants.ts"
+  },
+  "scripts": {
+    "format": "bunx biome format --write",
+    "lint": "bunx biome lint --fix",
+    "check": "bunx biome check --write"
+  }
 }
