@@ -22,7 +22,7 @@ RUN cd server && bun add prisma --ignore-scripts
 
 # Copy Prisma schema and generate client
 COPY server/prisma/ server/prisma/
-RUN cd server && bunx prisma generate
+RUN cd server && DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" bunx prisma generate
 
 # ──────────────────────────────────────────────
 # Stage 2: Production runtime
