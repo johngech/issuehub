@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Environment (secrets)
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Documentation
+*.md
+
+# Prisma generated client (regenerated at build time)
+prisma/client/
+
+# Tests (not needed in production image)
+tests/
+vitest.config.ts
+coverage/

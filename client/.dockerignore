@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Documentation
+*.md
+
+# TanStack Router cache
+.tanstack/
+
+# CTA config (not needed at runtime)
+.cta.json

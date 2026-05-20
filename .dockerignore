@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.opencode/
+.agents/
+.tmp/
+.claude/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Build outputs
+dist/
+dist-ssr/
+.next/
+.tmp/
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+*.dockerfile
+Dockerfile*
+compose*.yaml
+compose*.yml
+
+# Documentation
+*.md
+LICENSE
+
+# Test coverage
+coverage/
+test-results/
+*report*
+
+# Prisma
+server/prisma/client/
