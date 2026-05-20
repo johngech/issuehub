@@ -49,6 +49,8 @@ jobs:
 
       - name: Generate Prisma client
         working-directory: server
+        env:
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
         run: bunx prisma generate
 
       - name: Type check (server)
