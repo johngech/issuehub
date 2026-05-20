@@ -4,7 +4,6 @@ import { Router } from "express";
 import { requireAuth } from "../middleware/auth";
 import { requireRole } from "../middleware/authorize";
 import { userService } from "../services/user.service";
-import { userRepository } from "../repositories/user.repository";
 
 const router = Router();
 
@@ -48,36 +47,40 @@ router.get(
   requireRole(Role.ADMIN),
   async (req, res, next) => {
     try {
-      const { search, skip, take } = req.query;
+      const { search, page, pageSize } = req.query;
 
-      // Parse and validate skip parameter
-      let parsedSkip: number | undefined;
-      if (skip) {
-        parsedSkip = Number.parseInt(String(skip), 10);
-        if (Number.isNaN(parsedSkip) || parsedSkip < 0) {
+      // Parse and validate page parameter
+      let parsedPage = 1;
+      if (page) {
+        parsedPage = Number.parseInt(String(page), 10);
+        if (Number.isNaN(parsedPage) || parsedPage < 1) {
           return res.status(400).json({
             error: "Validation Error",
-            messages: "skip must be a non-negative number",
+            messages: "page must be a positive number",
           });
         }
       }
 
-      // Parse and validate take parameter
-      let parsedTake: number | undefined;
-      if (take) {
-        parsedTake = Number.parseInt(String(take), 10);
-        if (Number.isNaN(parsedTake) || parsedTake <= 0 || parsedTake > 100) {
+      // Parse and validate pageSize parameter
+      let parsedPageSize = 10;
+      if (pageSize) {
+        parsedPageSize = Number.parseInt(String(pageSize), 10);
+        if (
+          Number.isNaN(parsedPageSize) ||
+          parsedPageSize <= 0 ||
+          parsedPageSize > 100
+        ) {
           return res.status(400).json({
             error: "Validation Error",
-            messages: "take must be a number between 1 and 100",
+            messages: "pageSize must be a number between 1 and 100",
           });
         }
       }
 
-      const result = await userService.getAllUsers(req.user.id, {
+      const result = await userService.getPaginatedUsers(req.user.id, {
         search: search as string | undefined,
-        skip: parsedSkip,
-        take: parsedTake,
+        page: parsedPage,
+        pageSize: parsedPageSize,
       });
       res.json(result);
     } catch (err) {
@@ -122,10 +125,7 @@ router.patch(
       const { name, email, role, status } = parsed.data;
 
       // Prevent self-disable
-      if (
-        status === UserStatus.DISABLED &&
-        req.params.id === req.user.id
-      ) {
+      if (status === UserStatus.DISABLED && req.params.id === req.user.id) {
         return res.status(400).json({
           error: "Validation Error",
           messages: "Cannot disable your own account",

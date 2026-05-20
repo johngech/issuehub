@@ -17,14 +17,10 @@ interface MeResponse {
 }
 
 export interface UserListResponse {
-  users: User[];
-  pagination: {
-    total: number;
-    page: number;
-    pageCount: number;
-    take: number;
-    skip: number;
-  };
+  results: User[];
+  count: number;
+  next: string | null;
+  previous: string | null;
 }
 
 // ─── Current user ───
@@ -52,16 +48,17 @@ export function useUpdateProfile() {
 
 export function useUsers(params?: {
   search?: string;
-  skip?: number;
-  take?: number;
+  page?: number;
+  pageSize?: number;
 }) {
   return useQuery({
     queryKey: ["users", params],
     queryFn: () => {
       const qs = new URLSearchParams();
       if (params?.search) qs.set("search", params.search);
-      if (params?.skip !== undefined) qs.set("skip", String(params.skip));
-      if (params?.take !== undefined) qs.set("take", String(params.take));
+      if (params?.page !== undefined) qs.set("page", String(params.page));
+      if (params?.pageSize !== undefined)
+        qs.set("pageSize", String(params.pageSize));
       const query = qs.toString() ? `?${qs.toString()}` : "";
       return api<UserListResponse>(`/api/users${query}`);
     },

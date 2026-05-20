@@ -1,4 +1,4 @@
-import { Role, UserStatus } from "@issue-tracker/core/constants";
+import { Role, type UserStatus } from "@issue-tracker/core/constants";
 import { z } from "zod";
 import { can } from "../auth/authorization";
 import { userRepository } from "../repositories/user.repository";
@@ -126,6 +126,22 @@ export const userService = {
   },
 
   /**
+   * List all users with pagination — ADMIN only.
+   * Returns { count, next, previous, results } format.
+   */
+  async getPaginatedUsers(
+    requestingUserId: string,
+    filters?: { search?: string; page?: number; pageSize?: number },
+  ) {
+    const requester = await userRepository.findById(requestingUserId);
+    if (!requester || !can(requester.role, "user:list")) {
+      throw new ForbiddenError("Not authorized to list users");
+    }
+
+    return userRepository.findPaginated(filters);
+  },
+
+  /**
    * Get a single user by ID — ADMIN only.
    */
   async getUserById(requestingUserId: string, targetId: string) {
@@ -188,7 +204,12 @@ export const userService = {
       throw new NotFoundError("User not found");
     }
 
-    const updates: { name?: string; email?: string; role?: Role; status?: UserStatus } = {};
+    const updates: {
+      name?: string;
+      email?: string;
+      role?: Role;
+      status?: UserStatus;
+    } = {};
 
     // Handle name change
     if (data.name !== undefined) {

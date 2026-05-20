@@ -4,7 +4,6 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   type SortingState,
   useReactTable,
@@ -34,9 +33,7 @@ function SortIcon({ direction }: Readonly<SortDirection>) {
 }
 
 function getCellClass(hideOnMobile: boolean) {
-  return hideOnMobile
-    ? "hidden md:!table-cell"
-    : "whitespace-normal";
+  return hideOnMobile ? "hidden md:!table-cell" : "whitespace-normal";
 }
 
 function pluralize(count: number, singular: string, plural: string) {
@@ -95,35 +92,37 @@ const columns = [
   }),
 ];
 
+const PAGE_SIZE = 10;
+
 const UsersTable = ({ search }: UsersTableProps) => {
   const navigate = useNavigate();
   const [sorting, setSorting] = useState<SortingState>([]);
-  const { data, isPending } = useUsers({ search: search || undefined });
+  const [page, setPage] = useState(1);
+
+  const { data, isPending } = useUsers({
+    search: search || undefined,
+    page,
+    pageSize: PAGE_SIZE,
+  });
 
   const table = useReactTable({
-    data: data?.users ?? [],
+    data: data?.results ?? [],
     columns,
     state: {
       sorting,
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
   });
 
   if (isPending) return <UsersTableSkeleton />;
 
   const isEmpty = table.getRowModel().rows.length === 0;
-  const totalUsers = data?.pagination.total ?? 0;
-  const hasMultiplePages = table.getPageCount() > 1;
-  const currentPage = table.getState().pagination.pageIndex + 1;
-  const totalPages = table.getPageCount();
+  const totalUsers = data?.count ?? 0;
+  const totalPages = Math.ceil(totalUsers / PAGE_SIZE);
+  const hasNext = data?.next !== null;
+  const hasPrevious = data?.previous !== null;
 
   return (
     <Box className="mt-6 rounded-lg">
@@ -204,7 +203,7 @@ const UsersTable = ({ search }: UsersTableProps) => {
         <Text size="2" color="gray">
           {totalUsers} {pluralize(totalUsers, "user", "users")} total
         </Text>
-        {hasMultiplePages && (
+        {totalPages > 1 && (
           <Flex
             direction={{ initial: "column", sm: "row" }}
             gap="2"
@@ -212,38 +211,38 @@ const UsersTable = ({ search }: UsersTableProps) => {
             width={{ initial: "100%", sm: "auto" }}
           >
             <Text size="2" color="gray" className="text-center sm:text-left">
-              Page {currentPage} of {totalPages}
+              Page {page} of {totalPages}
             </Text>
             <Flex gap="2" justify="center">
               <Button
                 size="1"
                 variant="soft"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
+                onClick={() => setPage(1)}
+                disabled={!hasPrevious}
               >
                 {"<<"}
               </Button>
               <Button
                 size="1"
                 variant="soft"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
+                onClick={() => setPage((p) => p - 1)}
+                disabled={!hasPrevious}
               >
                 Previous
               </Button>
               <Button
                 size="1"
                 variant="soft"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
+                onClick={() => setPage((p) => p + 1)}
+                disabled={!hasNext}
               >
                 Next
               </Button>
               <Button
                 size="1"
                 variant="soft"
-                onClick={() => table.setPageIndex(totalPages - 1)}
-                disabled={!table.getCanNextPage()}
+                onClick={() => setPage(totalPages)}
+                disabled={!hasNext}
               >
                 {">>"}
               </Button>
