@@ -8,31 +8,27 @@
   "files": {
     "ignoreUnknown": false,
     "includes": [
-      "**/src/**/*",
-      "**/.vscode/**/*",
-      "**/index.html",
-      "**/vite.config.ts",
-      "!**/src/routeTree.gen.ts",
-      "!**/src/styles.css",
-      "!!node_modules/",
-      "!!dist/",
-      "!!build/",
-      "!!.tanstack/"
+      "client/src/**/*",
+      "client/.vscode/**/*",
+      "client/index.html",
+      "client/vite.config.ts",
+      "server/src/**/*",
+      "server/tests/**/*",
+      "server/*.{ts,js}",
+      "core/**/*.ts",
+      "!client/src/routeTree.gen.ts",
+      "!client/src/styles.css",
+      "!client/.tanstack/",
+      "!**/node_modules/",
+      "!**/dist/",
+      "!**/build/"
     ]
   },
   "formatter": {
     "enabled": true,
-    "indentStyle": "space",
-    "indentWidth": 2,
+    "indentStyle": "tab",
     "lineWidth": 80,
     "lineEnding": "lf"
-  },
-  "assist": {
-    "actions": {
-      "source": {
-        "organizeImports": "on"
-      }
-    }
   },
   "linter": {
     "enabled": true,
@@ -54,5 +50,27 @@
       "bracketSameLine": false,
       "arrowParentheses": "always"
     }
-  }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["client/**"],
+      "formatter": {
+        "indentStyle": "space",
+        "indentWidth": 2
+      }
+    },
+    {
+      "includes": ["server/**"],
+      "formatter": {
+        "indentStyle": "space"
+      }
+    }
+  ]
 }

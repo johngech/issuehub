@@ -6,9 +6,6 @@
 	"scripts": {
 		"dev": "bun run --watch index.ts",
 		"start": "bun run index.ts",
-		"format": "bunx biome format --write",
-		"lint": "bunx biome lint --write",
-		"check": "bunx biome check --write",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"db:seed": "bun run prisma/seed.ts"
@@ -17,7 +14,6 @@
 		"seed": "bun run prisma/seed.ts"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.15",
 		"@types/bun": "latest",
 		"@types/cors": "^2.8.17",
 		"@types/express": "^5.0.6",

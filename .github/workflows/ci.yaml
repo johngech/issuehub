@@ -15,12 +15,8 @@ jobs:
   # Lint & Type Check
   # ──────────────────────────────────────────────
   lint-and-typecheck:
-    name: Lint & Type Check (${{ matrix.package }})
+    name: Lint & Type Check
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        package: [client, server, core]
-      fail-fast: false
     permissions:
       contents: read
 
@@ -44,14 +40,15 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Lint (${{ matrix.package }})
-        working-directory: ${{ matrix.package }}
-        
-        run: bunx biome check ${{ matrix.package == 'core' && '.' || 'src/' }}
+      - name: Lint (all packages)
+        run: bunx biome check
 
-      - name: Type check (${{ matrix.package }})
-        if: matrix.package != 'core'
-        working-directory: ${{ matrix.package }}
+      - name: Type check (client)
+        working-directory: client
+        run: bunx tsc --noEmit
+
+      - name: Type check (server)
+        working-directory: server
         run: bunx tsc --noEmit
 
   # ──────────────────────────────────────────────

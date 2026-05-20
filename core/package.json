@@ -12,9 +12,5 @@
     "./types": "./types.ts",
     "./constants": "./constants.ts"
   },
-  "scripts": {
-    "format": "bunx biome format --write",
-    "lint": "bunx biome lint --fix",
-    "check": "bunx biome check --write"
-  }
+  "scripts": {}
 }

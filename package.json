@@ -14,9 +14,13 @@
     "build:client": "bun run --cwd client build",
     "build:server": "bun run --cwd server build",
     "test:e2e": "bunx playwright test",
-    "test:e2e:ui": "bunx playwright test --ui"
+    "test:e2e:ui": "bunx playwright test --ui",
+    "format": "bunx biome format --write",
+    "lint": "bunx biome lint --write",
+    "check": "bunx biome check --write"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.4.15",
     "@playwright/test": "^1.52.0",
     "typescript": "~6.0.2",
     "vite": "^8.0.12"

@@ -9,10 +9,7 @@
 		"dev": "bunx vite dev --port 3000",
 		"build": "bunx vite build",
 		"preview": "bunx vite preview",
-		"test": "bunx vitest run",
-		"format": "bunx biome format --write",
-		"lint": "bunx biome lint --fix",
-		"check": "bunx biome check --write"
+		"test": "bunx vitest run"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.2.2",
@@ -33,7 +30,6 @@
 		"tailwindcss": "^4.3.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.15",
 		"@tailwindcss/typography": "^0.5.19",
 		"@tanstack/devtools-vite": "^0.7.0",
 		"@tanstack/router-plugin": "^1.168.6",
