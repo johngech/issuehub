@@ -46,7 +46,8 @@ jobs:
 
       - name: Lint (${{ matrix.package }})
         working-directory: ${{ matrix.package }}
-        run: bunx biome check src/
+        
+        run: bunx biome check ${{ matrix.package == 'core' && '.' || 'src/' }}
 
       - name: Type check (${{ matrix.package }})
         if: matrix.package != 'core'
