@@ -34,7 +34,9 @@ function SortIcon({ direction }: Readonly<SortDirection>) {
 }
 
 function getCellClass(hideOnMobile: boolean) {
-  return hideOnMobile ? "hidden lg:table-cell" : "whitespace-normal";
+  return hideOnMobile
+    ? "hidden md:!table-cell"
+    : "whitespace-normal";
 }
 
 function pluralize(count: number, singular: string, plural: string) {
@@ -56,12 +58,12 @@ const columns = [
     cell: ({ row }) => {
       const user = row.original;
       return (
-        <Flex direction="column" gap="1">
+        <Flex direction="column" gap="2">
           <Text weight="bold">{user.name}</Text>
           <Text size="2" color="gray" className="break-all">
             {user.email}
           </Text>
-          <Flex gap="2" align="center" className="lg:hidden">
+          <Flex gap="2" align="center" className="md:hidden">
             <RoleBadge role={user.role} />
             <StatusBadge status={user.status} />
           </Flex>
@@ -125,69 +127,71 @@ const UsersTable = ({ search }: UsersTableProps) => {
 
   return (
     <Box className="mt-6 rounded-lg">
-      <Table.Root variant="surface">
-        <Table.Header>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <Table.Row key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                const hideOnMobile = (
-                  header.column.columnDef.meta as { hideOnMobile?: boolean }
-                )?.hideOnMobile;
-                return (
-                  <Table.ColumnHeaderCell
-                    key={header.id}
-                    className={getCellClass(hideOnMobile ?? false)}
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext(),
-                    )}
-                  </Table.ColumnHeaderCell>
-                );
-              })}
-            </Table.Row>
-          ))}
-        </Table.Header>
-        <Table.Body>
-          {isEmpty && (
-            <Table.Row>
-              <Table.Cell>
-                <Text color="gray">No users found.</Text>
-              </Table.Cell>
-            </Table.Row>
-          )}
-          {!isEmpty &&
-            table.getRowModel().rows.map((row) => (
-              <Table.Row
-                key={row.id}
-                className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
-                onClick={() =>
-                  navigate({
-                    to: "/admin/users/$id",
-                    params: { id: row.original.id },
-                  })
-                }
-              >
-                {row.getVisibleCells().map((cell) => {
+      <Box className="overflow-x-auto rounded-lg">
+        <Table.Root variant="surface" className="min-w-[320px]">
+          <Table.Header>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Table.Row key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
                   const hideOnMobile = (
-                    cell.column.columnDef.meta as { hideOnMobile?: boolean }
+                    header.column.columnDef.meta as { hideOnMobile?: boolean }
                   )?.hideOnMobile;
                   return (
-                    <Table.Cell
-                      key={cell.id}
+                    <Table.ColumnHeaderCell
+                      key={header.id}
                       className={getCellClass(hideOnMobile ?? false)}
                     >
                       {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
+                        header.column.columnDef.header,
+                        header.getContext(),
                       )}
-                    </Table.Cell>
+                    </Table.ColumnHeaderCell>
                   );
                 })}
               </Table.Row>
             ))}
-        </Table.Body>
-      </Table.Root>
+          </Table.Header>
+          <Table.Body>
+            {isEmpty && (
+              <Table.Row>
+                <Table.Cell>
+                  <Text color="gray">No users found.</Text>
+                </Table.Cell>
+              </Table.Row>
+            )}
+            {!isEmpty &&
+              table.getRowModel().rows.map((row) => (
+                <Table.Row
+                  key={row.id}
+                  className="cursor-pointer hover:bg-gray-50"
+                  onClick={() =>
+                    navigate({
+                      to: "/admin/users/$id",
+                      params: { id: row.original.id },
+                    })
+                  }
+                >
+                  {row.getVisibleCells().map((cell) => {
+                    const hideOnMobile = (
+                      cell.column.columnDef.meta as { hideOnMobile?: boolean }
+                    )?.hideOnMobile;
+                    return (
+                      <Table.Cell
+                        key={cell.id}
+                        className={getCellClass(hideOnMobile ?? false)}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </Table.Cell>
+                    );
+                  })}
+                </Table.Row>
+              ))}
+          </Table.Body>
+        </Table.Root>
+      </Box>
 
       <Flex
         direction={{ initial: "column", sm: "row" }}

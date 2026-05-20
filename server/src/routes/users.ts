@@ -1,8 +1,5 @@
 import { Role, UserStatus } from "@issue-tracker/core/constants";
-import {
-  changeRoleSchema,
-  updateProfileSchema,
-} from "@issue-tracker/core/validation";
+import { updateProfileSchema } from "@issue-tracker/core/validation";
 import { Router } from "express";
 import { requireAuth } from "../middleware/auth";
 import { requireRole } from "../middleware/authorize";
@@ -107,14 +104,14 @@ router.get(
   },
 );
 
-/** PATCH /api/users/:id/role — Change user role */
+/** PATCH /api/users/:id — Update user profile, role and/or status */
 router.patch(
-  "/users/:id/role",
+  "/users/:id",
   requireAuth,
   requireRole(Role.ADMIN),
   async (req, res, next) => {
     try {
-      const parsed = changeRoleSchema.safeParse(req.body);
+      const parsed = updateProfileSchema.safeParse(req.body);
       if (!parsed.success) {
         return res.status(400).json({
           error: "Validation Error",
@@ -122,34 +119,11 @@ router.patch(
         });
       }
 
-      const user = await userService.changeRole(
-        req.user.id,
-        req.params.id as string,
-        parsed.data.role,
-      );
-      res.json(user);
-    } catch (err) {
-      next(err);
-    }
-  },
-);
+      const { name, email, role, status } = parsed.data;
 
-/** PATCH /api/users/:id — Update user (including status) */
-router.patch(
-  "/users/:id",
-  requireAuth,
-  requireRole(Role.ADMIN),
-  async (req, res, next) => {
-    try {
-      // Only allow updating specific fields for security
-      const allowedUpdates: { status?: UserStatus } = {};
-      if (req.body.status !== undefined) {
-        allowedUpdates.status = req.body.status;
-      }
-
-      // Prevent self-disable through this endpoint too
+      // Prevent self-disable
       if (
-        allowedUpdates.status === "DISABLED" &&
+        status === UserStatus.DISABLED &&
         req.params.id === req.user.id
       ) {
         return res.status(400).json({
@@ -158,9 +132,10 @@ router.patch(
         });
       }
 
-      const user = await userRepository.update(
+      const user = await userService.updateUser(
+        req.user.id,
         req.params.id as string,
-        allowedUpdates,
+        { name, email, role, status },
       );
       res.json(user);
     } catch (err) {
@@ -169,18 +144,15 @@ router.patch(
   },
 );
 
-/** PATCH /api/users/:id/disable — Toggle user status (enable/disable) */
-router.patch(
-  "/users/:id/disable",
+/** DELETE /api/users/:id — Delete user account */
+router.delete(
+  "/users/:id",
   requireAuth,
   requireRole(Role.ADMIN),
   async (req, res, next) => {
     try {
-      const user = await userService.toggleUserStatus(
-        req.user.id,
-        req.params.id as string,
-      );
-      res.json(user);
+      await userService.deleteUser(req.user.id, req.params.id as string);
+      res.status(204).send();
     } catch (err) {
       next(err);
     }

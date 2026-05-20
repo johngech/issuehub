@@ -1,4 +1,4 @@
-import { Role } from "@issue-tracker/core/constants";
+import { Role, UserStatus } from "@issue-tracker/core/constants";
 import { z } from "zod";
 import { can } from "../auth/authorization";
 import { userRepository } from "../repositories/user.repository";
@@ -48,9 +48,9 @@ export class ValidationError extends Error {
  * @throws ValidationError if email is invalid
  */
 export function validateEmail(email: string): void {
-  const result = emailSchema.safeParse(email);
-  if (!result.success) {
-    throw new ValidationError(result.error.errors[0].message);
+  const validation = emailSchema.safeParse(email);
+  if (!validation.success) {
+    throw new ValidationError(validation.error.message);
   }
 }
 
@@ -170,20 +170,94 @@ export const userService = {
   },
 
   /**
-   * Toggle a user's active/disabled status — ADMIN only.
-   * Prevents admin from disabling themselves.
+   * Update a user's profile, role and/or status — ADMIN only.
+   * Consolidates profile update, role change and status toggle into a single RESTful endpoint.
    */
-  async toggleUserStatus(requestingUserId: string, targetId: string) {
+  async updateUser(
+    requestingUserId: string,
+    targetId: string,
+    data: { name?: string; email?: string; role?: Role; status?: UserStatus },
+  ) {
     const requester = await userRepository.findById(requestingUserId);
     if (!requester || !can(requester.role, "user:manage")) {
       throw new ForbiddenError("Not authorized to manage users");
     }
 
-    // Prevent self-disable
-    if (requestingUserId === targetId) {
-      throw new ConflictError("Cannot disable your own account");
+    const target = await userRepository.findById(targetId);
+    if (!target) {
+      throw new NotFoundError("User not found");
     }
 
-    return userRepository.toggleStatus(targetId);
+    const updates: { name?: string; email?: string; role?: Role; status?: UserStatus } = {};
+
+    // Handle name change
+    if (data.name !== undefined) {
+      updates.name = data.name;
+    }
+
+    // Handle email change
+    if (data.email !== undefined) {
+      validateEmail(data.email);
+
+      // Ensure email is not already taken by another user
+      const existing = await userRepository.findByEmail(data.email);
+      if (existing && existing.id !== targetId) {
+        throw new ConflictError("Email already in use");
+      }
+      updates.email = data.email;
+    }
+
+    // Handle role change
+    if (data.role !== undefined) {
+      // Prevent demoting the last admin
+      if (target.role === Role.ADMIN && data.role !== Role.ADMIN) {
+        const adminCount = await userRepository.countByRole(Role.ADMIN);
+        if (adminCount <= 1) {
+          throw new ConflictError(
+            "Cannot demote the last admin user. Promote another user first.",
+          );
+        }
+      }
+      updates.role = data.role;
+    }
+
+    // Handle status change
+    if (data.status !== undefined) {
+      updates.status = data.status;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return target;
+    }
+
+    return userRepository.update(targetId, updates);
+  },
+
+  /**
+   * Delete a user — ADMIN only.
+   * Prevents deleting the last admin.
+   */
+  async deleteUser(requestingUserId: string, targetId: string) {
+    const requester = await userRepository.findById(requestingUserId);
+    if (!requester || !can(requester.role, "user:manage")) {
+      throw new ForbiddenError("Not authorized to manage users");
+    }
+
+    const target = await userRepository.findById(targetId);
+    if (!target) {
+      throw new NotFoundError("User not found");
+    }
+
+    // Prevent deleting the last admin
+    if (target.role === Role.ADMIN) {
+      const adminCount = await userRepository.countByRole(Role.ADMIN);
+      if (adminCount <= 1) {
+        throw new ConflictError(
+          "Cannot delete the last admin user. Promote another user first.",
+        );
+      }
+    }
+
+    return userRepository.deleteById(targetId);
   },
 };

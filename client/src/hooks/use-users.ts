@@ -83,7 +83,7 @@ export function useChangeRole() {
 
   return useMutation({
     mutationFn: ({ userId, role }: { userId: string; role: Role }) =>
-      api<User>(`/api/users/${userId}/role`, {
+      api<User>(`/api/users/${userId}`, {
         method: "PATCH",
         body: { role },
       }),
@@ -100,13 +100,54 @@ export function useToggleUserStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (userId: string) =>
-      api<User>(`/api/users/${userId}/disable`, {
+    mutationFn: ({ userId, status }: { userId: string; status: UserStatus }) =>
+      api<User>(`/api/users/${userId}`, {
         method: "PATCH",
+        body: { status },
       }),
-    onSuccess: (_data, userId) => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      queryClient.invalidateQueries({ queryKey: ["users", userId] });
+      queryClient.invalidateQueries({ queryKey: ["users", variables.userId] });
+    },
+  });
+}
+
+// ─── Admin: update user profile ───
+
+export function useUpdateUserProfile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      data,
+    }: {
+      userId: string;
+      data: { name?: string; email?: string };
+    }) =>
+      api<User>(`/api/users/${userId}`, {
+        method: "PATCH",
+        body: data,
+      }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["users", variables.userId] });
+    },
+  });
+}
+
+// ─── Admin: delete user ───
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userId: string) =>
+      api<void>(`/api/users/${userId}`, {
+        method: "DELETE",
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 }

@@ -2,11 +2,10 @@ import {
   type UpdateProfileInput,
   updateProfileSchema,
 } from "@issue-tracker/core/validation";
-import { Box, Flex, Heading, Text } from "@radix-ui/themes";
+import { Box, Button, Flex, Heading, Text } from "@radix-ui/themes";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Form, FormField } from "#/components/forms";
-import { Button } from "#/components/ui/button";
 import { RoleBadge } from "#/components/ui/role-badge";
 import { StatusBadge } from "#/components/ui/status-badge";
 import { useCurrentUser, useUpdateProfile } from "#/hooks/use-users";
@@ -116,13 +115,13 @@ function ProfilePage() {
       <Box mt={"3"}>
         <Button
           variant="soft"
-          className="cursor-pointer"
+          color="red"
           onClick={async () => {
             await authClient.signOut();
             globalThis.location.href = "/";
           }}
         >
-          <Text className="text-red-400">Sign Out</Text>
+          Sign Out
         </Button>
       </Box>
     </Box>

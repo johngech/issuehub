@@ -47,7 +47,7 @@ export const userRepository = {
     return user as UserRecord | null;
   },
 
-  async findAll({ search, skip = 0, take }: UserFilters = {}): Promise<{
+  async findAll({ search, skip = 0, take = 20 }: UserFilters = {}): Promise<{
     users: UserRecord[];
     total: number;
   }> {
@@ -83,7 +83,7 @@ export const userRepository = {
 
   async update(
     id: string,
-    data: { name?: string; email?: string; status?: UserStatus },
+    data: { name?: string; email?: string; role?: Role; status?: UserStatus },
   ): Promise<UserRecord> {
     const user = await prisma.user.update({
       where: { id },
@@ -145,5 +145,9 @@ export const userRepository = {
 
   async countByRole(role: Role): Promise<number> {
     return prisma.user.count({ where: { role } });
+  },
+
+  async deleteById(id: string): Promise<void> {
+    await prisma.user.delete({ where: { id } });
   },
 };

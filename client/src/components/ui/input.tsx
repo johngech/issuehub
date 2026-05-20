@@ -30,17 +30,9 @@ export function Input({
       )}
       <input
         id={inputId}
+        className="w-full rounded-md border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
         style={{
-          fontFamily: "var(--font-body)",
-          fontSize: "var(--text-base)",
-          borderRadius: "var(--radius-md)",
-          border: error
-            ? "1px solid var(--color-red-9)"
-            : "1px solid var(--color-border)",
-          padding: "var(--space-md)",
-          transition: "all var(--transition-fast)",
-          width: "100%",
-          boxSizing: "border-box",
+          borderColor: error ? "var(--color-red-9)" : "var(--gray-5)",
           backgroundColor: error ? "var(--color-red-2)" : undefined,
         }}
         {...props}

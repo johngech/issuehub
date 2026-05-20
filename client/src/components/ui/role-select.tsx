@@ -1,5 +1,5 @@
 import { Role } from "@issue-tracker/core/constants";
-import { Flex, Select } from "@radix-ui/themes";
+import { Flex, Select, Text } from "@radix-ui/themes";
 
 const ROLES = [
   { value: Role.ADMIN, label: "Admin" },
@@ -23,7 +23,6 @@ export function RoleSelect({
       <Select.Root value={value} onValueChange={onChange} disabled={disabled}>
         <Select.Trigger />
         <Select.Content>
-          <Select.Label>Select Role</Select.Label>
           {ROLES.map((role) => (
             <Select.Item key={role.value} value={role.value}>
               {role.label}

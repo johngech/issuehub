@@ -1,15 +1,26 @@
-import type { Role } from "@issue-tracker/core/constants";
-import { Box, Heading, Text } from "@radix-ui/themes";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { UserStatus, type Role } from "@issue-tracker/core/constants";
+import {
+  type UpdateProfileInput,
+  updateProfileSchema,
+} from "@issue-tracker/core/validation";
+import { Box, Button, Flex, Heading, Text } from "@radix-ui/themes";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Button } from "#/components/ui/button";
+import { Form, FormField } from "#/components/forms";
 import { ConfirmDialog } from "#/components/ui/confirm-dialog";
 import { RoleBadge } from "#/components/ui/role-badge";
 import { RoleSelect } from "#/components/ui/role-select";
 import { StatusBadge } from "#/components/ui/status-badge";
-import { useChangeRole, useToggleUserStatus, useUser } from "#/hooks/use-users";
+import {
+  useChangeRole,
+  useDeleteUser,
+  useToggleUserStatus,
+  useUpdateUserProfile,
+  useUser,
+} from "#/hooks/use-users";
 import { authClient } from "#/lib/auth-client";
 import { isAdmin } from "#/lib/auth-guard";
+import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/admin/users/$id")({
   component: AdminUserDetailPage,
@@ -29,32 +40,53 @@ export const Route = createFileRoute("/admin/users/$id")({
   ),
 });
 
+type ConfirmAction = "role" | "disable" | "enable" | "delete" | null;
+
 function AdminUserDetailPage() {
   const { id } = Route.useParams();
-  const router = useRouter();
+  const navigate = useNavigate();
   const { data: user, isPending, error } = useUser(id);
   const changeRole = useChangeRole();
   const toggleStatus = useToggleUserStatus();
+  const updateProfile = useUpdateUserProfile();
+  const deleteUser = useDeleteUser();
 
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<"role" | "disable" | null>(
-    null,
-  );
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
   const [pendingRole, setPendingRole] = useState<Role | null>(null);
+  const [successMsg, setSuccessMsg] = useState("");
+
+  const isDisabled = user?.status === "DISABLED";
 
   const handleRoleChange = async () => {
     if (!user || !pendingRole) return;
-    await changeRole.mutateAsync({ userId: user.id, role: pendingRole });
     setConfirmOpen(false);
     setConfirmAction(null);
+    await changeRole.mutateAsync({ userId: user.id, role: pendingRole });
     setPendingRole(null);
   };
 
   const handleToggleStatus = async () => {
     if (!user) return;
-    await toggleStatus.mutateAsync(user.id);
+    const newStatus = isDisabled ? UserStatus.ACTIVE : UserStatus.DISABLED;
     setConfirmOpen(false);
     setConfirmAction(null);
+    await toggleStatus.mutateAsync({ userId: user.id, status: newStatus });
+  };
+
+  const handleDelete = async () => {
+    if (!user) return;
+    setConfirmOpen(false);
+    setConfirmAction(null);
+    navigate({ to: "/admin/users" });
+    await deleteUser.mutateAsync(user.id);
+  };
+
+  const handleProfileSubmit = async (values: UpdateProfileInput) => {
+    if (!user) return;
+    await updateProfile.mutateAsync({ userId: user.id, data: values });
+    setSuccessMsg("Profile updated");
+    setTimeout(() => setSuccessMsg(""), 3000);
   };
 
   if (isPending) {
@@ -79,7 +111,7 @@ function AdminUserDetailPage() {
         </Text>
         <button
           type="button"
-          onClick={() => router.history.back()}
+          onClick={() => navigate({ to: "/admin/users" })}
           className="mt-4 text-sm text-muted-foreground hover:text-foreground"
         >
           ← Back to users
@@ -94,7 +126,7 @@ function AdminUserDetailPage() {
         <Heading className="text-2xl font-bold">User not found</Heading>
         <button
           type="button"
-          onClick={() => router.history.back()}
+          onClick={() => navigate({ to: "/admin/users" })}
           className="mt-4 text-sm text-muted-foreground hover:text-foreground"
         >
           ← Back to users
@@ -103,9 +135,10 @@ function AdminUserDetailPage() {
     );
   }
 
-  const isDisabled = user.status === "DISABLED";
-
-  const confirmConfig = {
+  const confirmConfig: Record<
+    NonNullable<ConfirmAction>,
+    { title: string; description: string; confirmLabel: string }
+  > = {
     role: {
       title: "Change User Role",
       description: `Change ${user.name}'s role to ${pendingRole}?`,
@@ -121,28 +154,44 @@ function AdminUserDetailPage() {
       description: `Enable ${user.name}'s account? They will be able to log in again.`,
       confirmLabel: "Enable",
     },
-  } as const;
+    delete: {
+      title: "Delete User",
+      description: `Permanently delete ${user.name}'s account? This action cannot be undone.`,
+      confirmLabel: "Delete",
+    },
+  };
 
-  const statusAction = isDisabled ? "enable" : "disable";
-  const statusButtonText = toggleStatus.isPending
-    ? `${statusAction === "enable" ? "Enabling" : "Disabling"}...`
-    : `${statusAction === "enable" ? "Enable" : "Disable"} Account`;
+  const activeConfirm = confirmAction ? confirmConfig[confirmAction] : null;
 
-  const activeConfirm = confirmAction
-    ? confirmConfig[
-        confirmAction === "disable" && isDisabled ? "enable" : confirmAction
-      ]
-    : confirmConfig.disable;
+  const profileInitialValues: UpdateProfileInput = {
+    name: user.name ?? "",
+    email: user.email ?? "",
+  };
 
   return (
     <Box className="mx-auto max-w-lg p-8">
+      {/* Delete in progress indicator */}
+      {deleteUser.isPending && (
+        <Box className="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+          <Flex align="center" gap="2">
+            <Box className="h-4 w-4 animate-spin rounded-full border-2 border-yellow-600 border-t-transparent" />
+            <Text className="text-sm text-yellow-800">
+              Deleting user account...
+            </Text>
+          </Flex>
+        </Box>
+      )}
+
       <button
         type="button"
-        onClick={() => router.history.back()}
+        onClick={() => navigate({ to: "/admin/users" })}
         aria-label="Go back to users list"
-        className="mb-4 text-sm text-muted-foreground hover:text-foreground focus:outline-none rounded"
+        className="mb-4 text-sm text-muted-foreground cursor-pointer hover:border-l-pink-300 focus:outline-none rounded"
       >
-        ← Back to users
+        <Flex gapX={"2"}>
+          <ArrowLeft size={20} />
+          <Text as="span">Back to users</Text>
+        </Flex>
       </button>
 
       <Heading className="text-2xl font-bold">{user.name}</Heading>
@@ -153,61 +202,156 @@ function AdminUserDetailPage() {
         <StatusBadge status={user.status} />
       </Box>
 
+      {/* Profile update form */}
       <Box className="mt-8 space-y-6 border-t pt-6">
-        <Box>
-          <Heading as="h2" className="text-sm font-medium">
-            Role
-          </Heading>
-          <Box className="mt-2 flex items-center gap-2">
-            <RoleSelect
-              value={user.role}
-              onChange={(role) => {
-                setPendingRole(role);
-                setConfirmAction("role");
-                setConfirmOpen(true);
-              }}
-            />
-          </Box>
-        </Box>
-        <Box>
-          <Heading as="h2" className="text-sm font-medium">
-            Account Status
-          </Heading>
-          <Box className="mt-2">
+        <Heading as="h2" className="text-sm font-medium">
+          Profile
+        </Heading>
+        <Form
+          validationSchema={updateProfileSchema}
+          initialValues={profileInitialValues}
+          onSubmit={handleProfileSubmit}
+          className="space-y-4"
+        >
+          <FormField
+            name="name"
+            label="Name"
+            placeholder="Enter name"
+            required
+          />
+          <FormField
+            name="email"
+            label="Email"
+            type="email"
+            placeholder="Enter email"
+            required
+          />
+          <Flex gap="3" align="center">
             <Button
-              variant={isDisabled ? "classic" : "ghost"}
+              type="submit"
+              disabled={updateProfile.isPending}
+              loading={updateProfile.isPending}
+            >
+              Save Changes
+            </Button>
+            {successMsg && (
+              <Text className="text-sm text-green-500">{successMsg}</Text>
+            )}
+            {updateProfile.error && (
+              <Text className="text-sm text-red-500">
+                {updateProfile.error.message}
+              </Text>
+            )}
+          </Flex>
+        </Form>
+      </Box>
+
+      {/* Role management */}
+      <Box className="mt-8 space-y-6 border-t pt-6">
+        <Heading as="h2" className="text-sm font-medium">
+          Role
+        </Heading>
+        <RoleSelect
+          value={user.role}
+          onChange={(role) => {
+            setPendingRole(role);
+            setConfirmAction("role");
+            setConfirmOpen(true);
+          }}
+        />
+      </Box>
+
+      {/* Danger zone */}
+      <Box className="mt-8 rounded-lg border border-red-200 bg-red-50/50 p-6">
+        <Heading
+          as="h2"
+          className="text-sm font-semibold uppercase tracking-wide text-red-600"
+        >
+          Danger Zone
+        </Heading>
+
+        <Box className="mt-4 divide-y divide-red-200">
+          {/* Disable / Enable */}
+          <Flex justify="between" align="center" py="4">
+            <Flex direction="column">
+              <Text className="text-sm font-medium">
+                {isDisabled ? "Enable Account" : "Disable Account"}
+              </Text>
+              <Text className="text-xs text-muted-foreground">
+                {isDisabled
+                  ? "Allow this user to log in again."
+                  : "Prevent this user from logging in."}
+              </Text>
+            </Flex>
+            <Button
+              variant={isDisabled ? "outline" : "solid"}
+              color="red"
               size="2"
               disabled={toggleStatus.isPending}
               onClick={() => {
-                setConfirmAction("disable");
+                setConfirmAction(isDisabled ? "enable" : "disable");
                 setConfirmOpen(true);
               }}
             >
-              {statusButtonText}
+              {toggleStatus.isPending
+                ? isDisabled
+                  ? "Enabling..."
+                  : "Disabling..."
+                : isDisabled
+                  ? "Enable"
+                  : "Disable"}
             </Button>
-          </Box>
+          </Flex>
+
+          {/* Delete */}
+          <Flex justify="between" align="center" py="4">
+            <Flex direction="column">
+              <Text className="text-sm font-medium">Delete Account</Text>
+              <Text className="text-xs text-muted-foreground">
+                Permanently remove this user and all associated data.
+              </Text>
+            </Flex>
+            <Button
+              variant="solid"
+              color="red"
+              size="2"
+              disabled={deleteUser.isPending}
+              onClick={() => {
+                setConfirmAction("delete");
+                setConfirmOpen(true);
+              }}
+            >
+              {deleteUser.isPending ? "Deleting..." : "Delete"}
+            </Button>
+          </Flex>
         </Box>
       </Box>
 
-      <p className="mt-2 text-xs text-muted-foreground">
-        Created: {new Date(user.createdAt).toLocaleDateString()}
-      </p>
+      <Text className="mt-4 text-xs text-muted-foreground">
+        Created: {new Date(user.createdAt).toUTCString()}
+      </Text>
 
       {/* Confirmation dialog */}
-      <ConfirmDialog
-        open={confirmOpen}
-        title={activeConfirm.title}
-        description={activeConfirm.description}
-        confirmLabel={activeConfirm.confirmLabel}
-        onConfirm={
-          confirmAction === "role" ? handleRoleChange : handleToggleStatus
-        }
-        onCancel={() => {
-          setConfirmOpen(false);
-          setConfirmAction(null);
-          setPendingRole(null);
-        }}
-      />
+      {activeConfirm && (
+        <ConfirmDialog
+          open={confirmOpen}
+          title={activeConfirm.title}
+          description={activeConfirm.description}
+          confirmLabel={activeConfirm.confirmLabel}
+          onConfirm={
+            confirmAction === "role"
+              ? handleRoleChange
+              : confirmAction === "delete"
+                ? handleDelete
+                : handleToggleStatus
+          }
+          onCancel={() => {
+            setConfirmOpen(false);
+            setConfirmAction(null);
+            setPendingRole(null);
+          }}
+        />
+      )}
     </Box>
   );
 }
