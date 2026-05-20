@@ -36,7 +36,11 @@ export function ConfirmDialog({
         </Dialog.Description>
         <Flex gap="3" mt="5">
           <Dialog.Close>
-            <Button onClick={onCancel} variant="outline" style={{ flexGrow: 1 }}>
+            <Button
+              onClick={onCancel}
+              variant="outline"
+              style={{ flexGrow: 1 }}
+            >
               {cancelLabel}
             </Button>
           </Dialog.Close>

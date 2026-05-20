@@ -1,5 +1,5 @@
 import { Role } from "@issue-tracker/core/constants";
-import { Flex, Select, Text } from "@radix-ui/themes";
+import { Flex, Select } from "@radix-ui/themes";
 
 const ROLES = [
   { value: Role.ADMIN, label: "Admin" },

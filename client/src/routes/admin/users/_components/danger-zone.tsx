@@ -1,10 +1,10 @@
+import { UserStatus } from "@issue-tracker/core/constants";
 import { Box, Button, Flex, Heading, Text } from "@radix-ui/themes";
 import {
   type User,
   useDeleteUser,
   useToggleUserStatus,
 } from "#/hooks/use-users";
-import { UserStatus } from "@issue-tracker/core/constants";
 
 interface DangerZoneProps {
   user: User;
