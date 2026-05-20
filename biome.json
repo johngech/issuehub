@@ -26,9 +26,8 @@
   },
   "formatter": {
     "enabled": true,
-    "indentStyle": "tab",
-    "lineWidth": 80,
-    "lineEnding": "lf"
+    "indentStyle": "space",
+    "lineWidth": 80
   },
   "linter": {
     "enabled": true,
@@ -69,7 +68,15 @@
     {
       "includes": ["server/**"],
       "formatter": {
-        "indentStyle": "space"
+        "indentStyle": "space",
+        "indentWidth": 2
+      }
+    },
+    {
+      "includes": ["core/**"],
+      "formatter": {
+        "indentStyle": "space",
+        "indentWidth": 2
       }
     }
   ]

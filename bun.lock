@@ -5,6 +5,7 @@
     "": {
       "name": "issue-tracker",
       "devDependencies": {
+        "@biomejs/biome": "2.4.15",
         "@playwright/test": "^1.52.0",
         "typescript": "~6.0.2",
         "vite": "^8.0.12",
@@ -31,7 +32,6 @@
         "tailwindcss": "^4.3.0",
       },
       "devDependencies": {
-        "@biomejs/biome": "2.4.15",
         "@tailwindcss/typography": "^0.5.19",
         "@tanstack/devtools-vite": "^0.7.0",
         "@tanstack/router-plugin": "^1.168.6",
@@ -67,7 +67,6 @@
         "pg": "^8.20.0",
       },
       "devDependencies": {
-        "@biomejs/biome": "^2.4.15",
         "@types/bun": "latest",
         "@types/cors": "^2.8.17",
         "@types/express": "^5.0.6",
