@@ -35,7 +35,7 @@ ENV NODE_ENV=production
 ENV PORT=4000
 
 # Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 
 # Copy installed dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
